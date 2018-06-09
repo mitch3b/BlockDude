@@ -128,9 +128,15 @@ void move_logic (void) {
 
 void update_sprites (void) {
 	//0-3 reserved for character
-	SPRITES[0] = Y1;
-	SPRITES[2] = facingLeft;
-	SPRITES[3] = X1;
+	if(collision[32*(Y1/8) + X1/8 - 1] == 0) { //TODO this is awful
+		SPRITES[0] = Y1;
+		SPRITES[2] = facingLeft;
+		SPRITES[3] = X1;
+	}
+	else {
+		Y1 = SPRITES[0];
+		X1 = SPRITES[3];
+	}
 	
 	if(holdingBlock != 0) {
 		SPRITES[holdingBlock*4] = Y1 - 8;
