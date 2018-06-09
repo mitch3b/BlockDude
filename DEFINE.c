@@ -28,6 +28,8 @@ unsigned char index;
 unsigned char index4;
 unsigned char X1;
 unsigned char Y1;
+unsigned char holdingBlock;
+unsigned char facingLeft;
 unsigned char state;
 unsigned char state4;
 unsigned char drawGameScreen;

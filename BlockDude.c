@@ -58,9 +58,11 @@ void Load_Palette (void) {
 void init_level1(void) {
 	X1 = 0x80;
 	Y1 = 0x78; 
+	holdingBlock = 0;
+	facingLeft = 0;
 	
 	SPRITES[1] = 0x10;
-	SPRITES[2] = 0;
+	SPRITES[2] = facingLeft;
 	
 	//SPRITES 4-11 for the two blocks
 	SPRITES[4] = level1_blocks_Y[0];
@@ -78,14 +80,48 @@ void move_logic (void) {
 		Y1 = Y1 - 8;
 	}
 	else if(((joypad1 & DOWN) != 0) && ((joypad1old & DOWN) == 0)) {
-		Y1 = Y1 + 8;
+		if(holdingBlock == 0) {
+			if(facingLeft == 0) {
+				//TODO check if block to the right
+				for(index = 1; index  + 1 < sizeof(level1_blocks_X); ++index) {
+					//TODO detect if wall above
+					if(SPRITES[4*index] == Y1 && (SPRITES[4*index + 3] == (X1 + 8))) {
+						holdingBlock = index;
+						break;
+					}
+				}
+			}
+			else {
+				//TODO check if block to the right
+				for(index = 1; index  + 1 < sizeof(level1_blocks_X); ++index) {
+					//TODO detect if wall above
+					if(SPRITES[4*index] == Y1 && (SPRITES[4*index + 3] == (X1 - 8))) {
+						holdingBlock = index;
+						break;
+					}
+				}
+			}
+			
+			//TODO don't need this once we have gravity
+			if(holdingBlock == 0) {
+				Y1 = Y1 + 8;
+			}
+		}
+		else {
+			//TODO use gravity
+			SPRITES[holdingBlock*4] += 8;
+			SPRITES[holdingBlock*4 + 3] += (facingLeft != 0) ? (-8) : 8;
+			holdingBlock = 0;
+		}
 	}
 	
 	if(((joypad1 & RIGHT) != 0) && ((joypad1old & RIGHT) == 0)) {
 		X1 = X1 + 8;
+		facingLeft = 0;
 	}
 	else if(((joypad1 & LEFT) != 0) && ((joypad1old & LEFT) == 0)) {
 		X1 = X1 - 8;
+		facingLeft = 0x40;
 	}
 }
 
@@ -93,9 +129,13 @@ void move_logic (void) {
 void update_sprites (void) {
 	//0-3 reserved for character
 	SPRITES[0] = Y1;
+	SPRITES[2] = facingLeft;
 	SPRITES[3] = X1;
 	
-	
+	if(holdingBlock != 0) {
+		SPRITES[holdingBlock*4] = Y1 - 8;
+		SPRITES[holdingBlock*4 + 3] = X1;
+	}
 }
 
 
