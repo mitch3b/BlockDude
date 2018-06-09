@@ -3,8 +3,6 @@
 void main (void) {
 	All_Off(); // turn off screen
 	Draw_Background();
-	X1 = 0x80;
-	Y1 = 0x70; // middle of screen
 
 	gameState = 3; //0 - title, 1 - menu, 2 - scroll, 3 - game
 
@@ -13,6 +11,7 @@ void main (void) {
 	Wait_Vblank();
 	All_On(); // turn on screen
 	hide_sprites();
+	init_level1();
 	while (1){ // infinite loop
 		while (NMI_flag == 0); // wait till NMI
 
@@ -43,7 +42,7 @@ void All_On (void) {
 void Reset_Scroll (void) {
 	PPU_ADDRESS = 0;
 	PPU_ADDRESS = 0;
-	SCROLL = Horiz_scroll;
+	SCROLL = 0;
 	SCROLL = 0;
 }
 
@@ -56,15 +55,47 @@ void Load_Palette (void) {
 	}
 }
 
-void move_logic (void) {
+void init_level1(void) {
+	X1 = 0x80;
+	Y1 = 0x78; 
+	
+	SPRITES[1] = 0x10;
+	SPRITES[2] = 0;
+	
+	//SPRITES 4-11 for the two blocks
+	SPRITES[4] = level1_blocks_Y[0];
+	SPRITES[5] = 0x03;
+	SPRITES[6] = 0;
+	SPRITES[7] = level1_blocks_X[0];
+	SPRITES[8] = level1_blocks_Y[1];
+	SPRITES[9] = 0x03;
+	SPRITES[10] = 0;
+	SPRITES[11] = level1_blocks_X[1];
+}
 
+void move_logic (void) {
+	if(((joypad1 & UP) != 0) && ((joypad1old & UP) == 0)) {
+		Y1 = Y1 - 8;
+	}
+	else if(((joypad1 & DOWN) != 0) && ((joypad1old & DOWN) == 0)) {
+		Y1 = Y1 + 8;
+	}
+	
+	if(((joypad1 & RIGHT) != 0) && ((joypad1old & RIGHT) == 0)) {
+		X1 = X1 + 8;
+	}
+	else if(((joypad1 & LEFT) != 0) && ((joypad1old & LEFT) == 0)) {
+		X1 = X1 - 8;
+	}
 }
 
 
 void update_sprites (void) {
-	//Menu drawing
-	//Option Arrow
-	SPRITES[0] = 0x30 + currentMenuOption*0x10;
+	//0-3 reserved for character
+	SPRITES[0] = Y1;
+	SPRITES[3] = X1;
+	
+	
 }
 
 
@@ -79,7 +110,7 @@ void hide_sprites (void) {
 void Draw_Background(void) {
 	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
 	PPU_ADDRESS = 0x00;
-	UnRLE(TitleScreen);	// uncompresses our data
+	UnRLE(Level1);	// uncompresses our data
 
 	PPU_ADDRESS = 0x24; // address of nametable #1 = 0x2400
 	PPU_ADDRESS = 0x00;

@@ -1,5 +1,6 @@
 # NES specific
 *.nes
+*.nes.deb
 *.o
 *.s
 !asm4c.s

@@ -82,10 +82,6 @@ MusicInit:			;turns music channels off
 	jmp _main		;jumps to main in c code
 
 
-
-
-
-
 _Blanksprite:
 Blanksprite:
 	ldy #$40
@@ -140,7 +136,7 @@ nmi:
 	sta $2003
 	lda #2
 	sta $4014 ;push sprite data to OAM from $200-2ff
-	lda #$88
+	lda #$80
 	clc
 	adc _Nametable
 	sta $2000 ;nmi on
@@ -149,7 +145,7 @@ nmi:
 	lda $2002 ;reset the latch
 	lda _Horiz_scroll
 	sta $2005
-	lda #0
+	lda #$ff
 	sta $2005
 
 	pla
