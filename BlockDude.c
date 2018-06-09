@@ -127,7 +127,7 @@ void move_logic (void) {
 
 
 void update_sprites (void) {
-	//0-3 reserved for character
+	//Check against backtround
 	if(collision[32*(Y1/8) + X1/8 - 1] == 0) { //TODO this is awful
 		SPRITES[0] = Y1;
 		SPRITES[2] = facingLeft;
@@ -138,9 +138,33 @@ void update_sprites (void) {
 		X1 = SPRITES[3];
 	}
 	
+	//TODO Check against other blocks
+	//TODO check diagnol for collision
+	//TODO check collision on held block
+	
+	//Gravity
+	/*for(index = 0; index < 3 ; ++index) {
+		//TODO reuse collision logic from above
+		while(collision[32*((SPRITES[index*4] + 8)/8) + SPRITES[(index*4) + 3]/8 - 1] == 0) {
+			SPRITES[index*4] += 8;
+		}
+	}*/
+	//TODO no clue why loop above doesn't work...
+	while(collision[32*((SPRITES[0] + 8)/8) + SPRITES[3]/8 - 1] == 0) {
+			SPRITES[0] += 8;
+	}
+	
+	while(collision[32*((SPRITES[4] + 8)/8) + SPRITES[7]/8 - 1] == 0) {
+			SPRITES[4] += 8;
+	}
+	
+	while(collision[32*((SPRITES[8] + 8)/8) + SPRITES[11]/8 - 1] == 0) {
+			SPRITES[8] += 8;
+	}
+	
 	if(holdingBlock != 0) {
-		SPRITES[holdingBlock*4] = Y1 - 8;
-		SPRITES[holdingBlock*4 + 3] = X1;
+		SPRITES[holdingBlock*4] = SPRITES[0] - 8;
+		SPRITES[holdingBlock*4 + 3] = SPRITES[3];
 	}
 }
 
