@@ -75,25 +75,37 @@ void init_level1(void) {
 	SPRITES[11] = level1_blocks_X[1];
 }
 
+
+
 void move_logic (void) {
 	if(((joypad1 & UP) != 0) && ((joypad1old & UP) == 0)) {
-		getCollisionIndices(SPRITES[3] + (facingLeft ? -8 : 8), SPRITES[0]);
+		//See if we can move up in the direction we're facing
+		X1 = SPRITES[3] + (facingLeft ? -8 : 8);
+		Y1 = SPRITES[0] - 8;
 
-		if((collisionBin[index] & index4) != 0 && (collisionBin[index - 4] & index4) == 0) {
-			SPRITES[0] = SPRITES[0] - 8;
-			SPRITES[3] = SPRITES[3] + (facingLeft ? -8 : 8);
-			Y1 = SPRITES[0];
-			X1 = SPRITES[3];
+		//TODO can save some of the iterating blocks if we don't check when we know background check passed
+		getCollisionIndices(X1, SPRITES[0]);
+		collidesWithBlock(X1, SPRITES[0]);
+
+		//If block next to you can be stood on
+		if((collisionBin[index] & index4) != 0 || blockCollision != 0) {
+			//Make sure above isn't occupied
+			collidesWithBlock(X1, Y1);
+			if((collisionBin[index - 4] & index4) == 0 && blockCollision == 0) {
+				//TODO Make sure the diagnol isn't occupied
+				SPRITES[0] = Y1;
+				SPRITES[3] = X1;
+			}
+			else {
+				//TODO should be a better way, but the update sprites gets in the way
+				X1 = SPRITES[3];
+				Y1 = SPRITES[0];
+			}
 		}
 		else {
-			collidesWithBlock(SPRITES[3] + (facingLeft ? -8 : 8), SPRITES[0]); //leaves index == 1 if true
-
-			if(blockCollision != 0) {
-				SPRITES[0] = SPRITES[0] - 8;
-				SPRITES[3] = SPRITES[3] + (facingLeft ? -8 : 8);
-				Y1 = SPRITES[0];
-				X1 = SPRITES[3];
-			}
+			//TODO should be a better way, but the update sprites gets in the way
+			X1 = SPRITES[3];
+			Y1 = SPRITES[0];
 		}
 	}
 	else if(((joypad1 & DOWN) != 0) && ((joypad1old & DOWN) == 0)) {
@@ -118,6 +130,7 @@ void move_logic (void) {
 			}
 		}
 		else {
+			//Not holding a block so check if we can pick one up
 			//TODO make sure there isn't anything in the way
 			getCollisionIndices(SPRITES[3] + (facingLeft ? -8 : 8), SPRITES[0] - 8);
 
@@ -145,6 +158,7 @@ void move_logic (void) {
 	}
 }
 
+//Changes index, index4
 void getCollisionIndices(int x, int y) {
 	index = (y/8);
 	index = index*4 + (x/64);
@@ -154,6 +168,7 @@ void getCollisionIndices(int x, int y) {
 	index4 = 0x80 >> (index4/8);
 }
 
+//Changes blockCollision
 void collidesWithBlock(int x, int y) {
 	for(blockCollision = 1; (blockCollision - 1) < sizeof(level1_blocks_X); ++blockCollision) {
 		if(SPRITES[4*blockCollision] == y && SPRITES[4*blockCollision + 3] == x) {
@@ -186,7 +201,6 @@ void update_sprites (void) {
 		X1 = SPRITES[3];
 	}
 
-	//TODO Check against other blocks
 	//TODO check diagnol for collision
 	//TODO check collision on held block
 
@@ -219,10 +233,10 @@ void hide_sprites (void) {
 void draw_location(void) {
 	//sprites 57-63
 	//Get index into collisionBin
-	index = holdingBlock;
+	//index = index;
 
 	//Find the bit for that collisionBin Index
-	index4 = facingLeft;
+	//index4 = facingLeft;
 	//x 100's
 	SPRITES[228] = 0x10;
 	SPRITES[229] = 0xD0 + ((index / 100) % 10);
