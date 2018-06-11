@@ -65,14 +65,13 @@ void init_level1(void) {
 	SPRITES[2] = facingLeft;
 
 	//SPRITES 4-11 for the two blocks
-	SPRITES[4] = level1_blocks_Y[0];
-	SPRITES[5] = 0x03;
-	SPRITES[6] = 0;
-	SPRITES[7] = level1_blocks_X[0];
-	SPRITES[8] = level1_blocks_Y[1];
-	SPRITES[9] = 0x03;
-	SPRITES[10] = 0;
-	SPRITES[11] = level1_blocks_X[1];
+	index4 = 4;
+	for(index = 0; index < sizeof(level1_blocks_X); ++index) {
+		SPRITES[index4++] = level1_blocks_Y[index];
+		SPRITES[index4++] = 0x03;
+		SPRITES[index4++] = 0;
+		SPRITES[index4++] = level1_blocks_X[index];
+	}
 }
 
 
