@@ -182,7 +182,7 @@ void collidesWithBlock(int x, int y) {
 
 void update_sprites (void) {
 	//TODO remove for production
-	draw_location();
+	//draw_location();
 	//Check against background
 	getCollisionIndices(X1, Y1);
 
