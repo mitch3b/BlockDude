@@ -56,14 +56,14 @@ void Load_Palette (void) {
 }
 
 void init_level1(void) {
-	X1 = 0x80;
-	Y1 = 0x78; 
+	X1 = 0xa0;
+	Y1 = 0x70;
 	holdingBlock = 0;
 	facingLeft = 0;
-	
+
 	SPRITES[1] = 0x10;
 	SPRITES[2] = facingLeft;
-	
+
 	//SPRITES 4-11 for the two blocks
 	SPRITES[4] = level1_blocks_Y[0];
 	SPRITES[5] = 0x03;
@@ -77,45 +77,50 @@ void init_level1(void) {
 
 void move_logic (void) {
 	if(((joypad1 & UP) != 0) && ((joypad1old & UP) == 0)) {
-		Y1 = Y1 - 8;
+		//TODO this plus check block SPRITES
+		/*
+		getCollisionIndices(SPRITES[3], SPRITES[0] + (facingLeft ? -8 : 8));
+
+		if((collisionBin[index] & index4) != 0 && (collisionBin[index - 4] & index4) == 0) {
+			SPRITES[0] = SPRITES[0] - 8;
+			SPRITES[3] = SPRITES[3] + (facingLeft ? -8 : 8);
+			Y1 = SPRITES[0];
+			X1 = SPRITES[3];
+		}
+		*/
 	}
 	else if(((joypad1 & DOWN) != 0) && ((joypad1old & DOWN) == 0)) {
 		if(holdingBlock == 0) {
 			if(facingLeft == 0) {
-				//TODO check if block to the right
-				for(index = 1; index  + 1 < sizeof(level1_blocks_X); ++index) {
+				for(index = 1; (index - 1) < sizeof(level1_blocks_X); ++index) {
 					//TODO detect if wall above
-					if(SPRITES[4*index] == Y1 && (SPRITES[4*index + 3] == (X1 + 8))) {
+					if(SPRITES[4*index] == SPRITES[0] && (SPRITES[4*index + 3] == (SPRITES[3] + 8))) {
 						holdingBlock = index;
 						break;
 					}
 				}
 			}
 			else {
-				//TODO check if block to the right
-				for(index = 1; index  + 1 < sizeof(level1_blocks_X); ++index) {
+				for(index = 1; (index  - 1) < sizeof(level1_blocks_X); ++index) {
 					//TODO detect if wall above
-					if(SPRITES[4*index] == Y1 && (SPRITES[4*index + 3] == (X1 - 8))) {
+					if(SPRITES[4*index] == SPRITES[0] && (SPRITES[4*index + 3] == (SPRITES[3] - 8))) {
 						holdingBlock = index;
 						break;
 					}
 				}
 			}
-			
-			//TODO don't need this once we have gravity
-			if(holdingBlock == 0) {
-				Y1 = Y1 + 8;
-			}
 		}
 		else {
-			//TODO use gravity
-			SPRITES[holdingBlock*4] += 8;
-			SPRITES[holdingBlock*4 + 3] += (facingLeft != 0) ? (-8) : 8;
-			holdingBlock = 0;
+			//TODO make sure there isn't anything in the way
+			getCollisionIndices(SPRITES[3] + (facingLeft ? -8 : 8), SPRITES[0] - 8);
+
+			if((collisionBin[index] & index4) == 0) {
+				SPRITES[holdingBlock*4 + 3] += (facingLeft != 0) ? (-8) : 8;
+				holdingBlock = 0;
+			}
 		}
 	}
-	
-	if(((joypad1 & RIGHT) != 0) && ((joypad1old & RIGHT) == 0)) {
+	else if(((joypad1 & RIGHT) != 0) && ((joypad1old & RIGHT) == 0)) {
 		X1 = X1 + 8;
 		facingLeft = 0;
 	}
@@ -125,23 +130,38 @@ void move_logic (void) {
 	}
 }
 
+void getCollisionIndices(int x, int y) {
+	index = (y/8);
+	index = index*4 + (x/64);
+
+	//Find the bit for that collisionBin Index
+	index4 = x % 64;
+	index4 = 0x80 >> (index4/8);
+}
+
 
 void update_sprites (void) {
-	//Check against backtround
-	if(collision[32*(Y1/8) + X1/8 - 1] == 0) { //TODO this is awful
+	//TODO remove for production
+	draw_location();
+	//Check against background
+	getCollisionIndices(X1, Y1);
+
+	if((collisionBin[index] & index4) == 0) {
+	//if(0 ==0 ) {
 		SPRITES[0] = Y1;
 		SPRITES[2] = facingLeft;
 		SPRITES[3] = X1;
 	}
 	else {
+		//TODO might not need this with it below
 		Y1 = SPRITES[0];
 		X1 = SPRITES[3];
 	}
-	
+
 	//TODO Check against other blocks
 	//TODO check diagnol for collision
 	//TODO check collision on held block
-	
+
 	//Gravity
 	/*for(index = 0; index < 3 ; ++index) {
 		//TODO reuse collision logic from above
@@ -150,18 +170,31 @@ void update_sprites (void) {
 		}
 	}*/
 	//TODO no clue why loop above doesn't work...
-	while(collision[32*((SPRITES[0] + 8)/8) + SPRITES[3]/8 - 1] == 0) {
+	getCollisionIndices(SPRITES[3], SPRITES[0] + 8);
+	while((collisionBin[index] & index4) == 0) {
 			SPRITES[0] += 8;
+			index += 4; //Try directly below
 	}
-	
-	while(collision[32*((SPRITES[4] + 8)/8) + SPRITES[7]/8 - 1] == 0) {
-			SPRITES[4] += 8;
+
+	Y1 = SPRITES[0];
+	X1 = SPRITES[3];
+
+	if(holdingBlock != 1) {
+		getCollisionIndices(SPRITES[7], SPRITES[4] + 8);
+		while((collisionBin[index] & index4) == 0) {
+				SPRITES[4] += 8;
+				index += 4; //Try directly below
+		}
 	}
-	
-	while(collision[32*((SPRITES[8] + 8)/8) + SPRITES[11]/8 - 1] == 0) {
-			SPRITES[8] += 8;
+
+	if(holdingBlock != 2) {
+		getCollisionIndices(SPRITES[11], SPRITES[8] + 8);
+		while((collisionBin[index] & index4) == 0) {
+				SPRITES[8] += 8;
+				index += 4; //Try directly below
+		}
 	}
-	
+
 	if(holdingBlock != 0) {
 		SPRITES[holdingBlock*4] = SPRITES[0] - 8;
 		SPRITES[holdingBlock*4 + 3] = SPRITES[3];
@@ -175,6 +208,45 @@ void hide_sprites (void) {
 		SPRITES[4*index] = 0; //set x to offscreen
 		SPRITES[4*index + 3] = 0; //set y to offsreen
 	}
+}
+//For debugging
+void draw_location(void) {
+	//sprites 57-63
+	//Get index into collisionBin
+	index = holdingBlock;
+
+	//Find the bit for that collisionBin Index
+	index4 = facingLeft;
+	//x 100's
+	SPRITES[228] = 0x10;
+	SPRITES[229] = 0xD0 + ((index / 100) % 10);
+	SPRITES[230] = 0;
+	SPRITES[231] = 0x10;
+	//x 10's
+	SPRITES[244] = 0x10;
+	SPRITES[245] = 0xD0 + ((index / 10) % 10);
+	SPRITES[246] = 0;
+	SPRITES[247] = 0x18;
+	//x 1's
+	SPRITES[248] = 0x10;
+	SPRITES[249] = 0xD0 + (index % 10);
+	SPRITES[250] = 0;
+	SPRITES[251] = 0x20;
+	//y 100's
+	SPRITES[232] = 0x10;
+	SPRITES[233] = 0xD0 + ((index4 / 100) % 10);
+	SPRITES[234] = 0;
+	SPRITES[235] = 0x30;
+	//x 10's
+	SPRITES[236] = 0x10;
+	SPRITES[237] = 0xD0 + ((index4 / 10) % 10);
+	SPRITES[238] = 0;
+	SPRITES[239] = 0x38;
+	//x 1's
+	SPRITES[240] = 0x10;
+	SPRITES[241] = 0xD0 + (index4 % 10);
+	SPRITES[242] = 0;
+	SPRITES[243] = 0x40;
 }
 
 void Draw_Background(void) {
