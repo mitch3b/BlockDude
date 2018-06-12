@@ -2,16 +2,13 @@
 
 void main (void) {
 	All_Off(); // turn off screen
-	Draw_Background();
-
+	init_level1();
 	gameState = 3; //0 - title, 1 - menu, 2 - scroll, 3 - game
 
 	Load_Palette();
 	Reset_Scroll();
 	Wait_Vblank();
 	All_On(); // turn on screen
-	hide_sprites();
-	init_level1();
 	while (1){ // infinite loop
 		while (NMI_flag == 0); // wait till NMI
 
@@ -21,6 +18,11 @@ void main (void) {
 		if(gameState == 3) {
 			move_logic();
 			update_sprites();
+			check_endlevel();
+		}
+		else if (gameState == 4) {
+			init_level11();
+			gameState = 3;
 		}
 
 		NMI_flag = 0;
@@ -56,25 +58,66 @@ void Load_Palette (void) {
 }
 
 void init_level1(void) {
-	X1 = 0x70;
+	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+	PPU_ADDRESS = 0x00;
+	UnRLE(Level1);	// uncompresses our data
+	
+	X1 = 0x40;// 0xB0;//TODO this isnt right
 	Y1 = 0x70;
+	doorX = 0x38;
+	doorY = 0x80;
 	holdingBlock = 0;
 	facingLeft = 0;
 
 	SPRITES[1] = 0x10;
 	SPRITES[2] = facingLeft;
-
-	//SPRITES 4-11 for the two blocks
+	
+	numBlocks = sizeof(level_1_blocks_X);
+	
 	index4 = 4;
-	for(index = 0; index < sizeof(level1_blocks_X); ++index) {
-		SPRITES[index4++] = level1_blocks_Y[index];
+	for(index = 0; index < numBlocks; ++index) {
+		SPRITES[index4++] = level_1_blocks_Y[index];
 		SPRITES[index4++] = 0x03;
 		SPRITES[index4++] = 0;
-		SPRITES[index4++] = level1_blocks_X[index];
+		SPRITES[index4++] = level_1_blocks_X[index];
 	}
 }
 
+void init_level11(void) {
+	hide_sprites();
+	All_Off();
+	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+	PPU_ADDRESS = 0x00;
+	UnRLE(Level11);	// uncompresses our data
+	
+	for(index = 0 ; index < sizeof(collisionBin11) ; index++) {
+		collisionBin[index] = collisionBin11[index];
+	}	
 
+	X1 = 0x70;
+	Y1 = 0x48;
+	doorX = 0xC8;
+	doorY = 0x40;
+	holdingBlock = 0;
+	facingLeft = 0;
+
+	SPRITES[1] = 0x10;
+	SPRITES[2] = facingLeft;
+	
+	numBlocks = sizeof(level_11_blocks_X);
+	
+	index4 = 4;
+	for(index = 0; index < numBlocks; ++index) {
+		SPRITES[index4++] = level_11_blocks_Y[index];
+		SPRITES[index4++] = 0x03;
+		SPRITES[index4++] = 0;
+		SPRITES[index4++] = level_11_blocks_X[index];
+	}
+	
+	Wait_Vblank();
+	All_On();
+	Reset_Scroll();
+}
 
 void move_logic (void) {
 	if(((joypad1 & UP) != 0) && ((joypad1old & UP) == 0)) {
@@ -110,7 +153,7 @@ void move_logic (void) {
 	else if(((joypad1 & DOWN) != 0) && ((joypad1old & DOWN) == 0)) {
 		if(holdingBlock == 0) {
 			if(facingLeft == 0) {
-				for(index = 1; (index - 1) < sizeof(level1_blocks_X); ++index) {
+				for(index = 1; (index - 1) < numBlocks; ++index) {
 					//TODO detect if wall above
 					if(SPRITES[4*index] == SPRITES[0] && (SPRITES[4*index + 3] == (SPRITES[3] + 8))) {
 						holdingBlock = index;
@@ -119,7 +162,7 @@ void move_logic (void) {
 				}
 			}
 			else {
-				for(index = 1; (index  - 1) < sizeof(level1_blocks_X); ++index) {
+				for(index = 1; (index  - 1) < numBlocks; ++index) {
 					//TODO detect if wall above
 					if(SPRITES[4*index] == SPRITES[0] && (SPRITES[4*index + 3] == (SPRITES[3] - 8))) {
 						holdingBlock = index;
@@ -169,7 +212,7 @@ void getCollisionIndices(int x, int y) {
 
 //Changes blockCollision
 void collidesWithBlock(int x, int y) {
-	for(blockCollision = 1; (blockCollision - 1) < sizeof(level1_blocks_X); ++blockCollision) {
+	for(blockCollision = 1; (blockCollision - 1) < numBlocks; ++blockCollision) {
 		if(SPRITES[4*blockCollision] == y && SPRITES[4*blockCollision + 3] == x) {
 			return;
 		}
@@ -228,6 +271,14 @@ void hide_sprites (void) {
 		SPRITES[4*index + 3] = 0; //set y to offsreen
 	}
 }
+
+void check_endlevel(void) {
+	if(SPRITES[0] == doorY && SPRITES[3] == doorX) {
+		//Level complete
+		gameState = 4;
+	}
+}
+
 //For debugging
 void draw_location(void) {
 	//sprites 57-63
@@ -266,14 +317,4 @@ void draw_location(void) {
 	SPRITES[241] = 0xD0 + (index4 % 10);
 	SPRITES[242] = 0;
 	SPRITES[243] = 0x40;
-}
-
-void Draw_Background(void) {
-	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
-	PPU_ADDRESS = 0x00;
-	UnRLE(Level1);	// uncompresses our data
-
-	PPU_ADDRESS = 0x24; // address of nametable #1 = 0x2400
-	PPU_ADDRESS = 0x00;
-	UnRLE(MenuScreen);	// uncompresses our data
 }
