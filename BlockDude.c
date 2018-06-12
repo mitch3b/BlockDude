@@ -182,10 +182,14 @@ void move_logic (void) {
 
 				//Drop due to gravity (if done anywhere else, you'd need to check if a block has moved before applying gravity)
 				getCollisionIndices(SPRITES[holdingBlock*4 + 3], SPRITES[holdingBlock*4] + 8);
-				while((collisionBin[index] & index4) == 0) {
+				collidesWithBlock(SPRITES[holdingBlock*4 + 3], SPRITES[0] + 8);
+				while((collisionBin[index] & index4) == 0 && blockCollision == 0) {
 						SPRITES[holdingBlock*4] += 8;
 						index += 4; //Try directly below
+						collidesWithBlock(SPRITES[holdingBlock*4 + 3], SPRITES[holdingBlock*4] + 8);
 				}
+
+				
 				holdingBlock = 0;
 			}
 		}
