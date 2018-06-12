@@ -62,7 +62,7 @@ void init_level1(void) {
 	PPU_ADDRESS = 0x00;
 	UnRLE(Level1);	// uncompresses our data
 	
-	X1 = 0x40;// 0xB0;//TODO this isnt right
+	X1 = 0xB0;//TODO this isnt right
 	Y1 = 0x70;
 	doorX = 0x38;
 	doorY = 0x80;
@@ -74,13 +74,24 @@ void init_level1(void) {
 	
 	numBlocks = sizeof(level_1_blocks_X);
 	
-	index4 = 4;
-	for(index = 0; index < numBlocks; ++index) {
-		SPRITES[index4++] = level_1_blocks_Y[index];
-		SPRITES[index4++] = 0x03;
-		SPRITES[index4++] = 0;
-		SPRITES[index4++] = level_1_blocks_X[index];
+	index6 = 4;
+	for(index5 = 0; index5 < numBlocks; ++index5) {
+		SPRITES[index6++] = level_1_blocks_Y[index5];
+		SPRITES[index6++] = 0x03;
+		SPRITES[index6++] = 0;
+		SPRITES[index6++] = level_1_blocks_X[index5];
+		add_to_collision_map(level_1_blocks_X[index5], level_1_blocks_Y[index5]);
 	}
+}
+
+void add_to_collision_map(int x, int y) {
+	getCollisionIndices(x, y);
+	collisionBin[index] = index4 | collisionBin[index];
+}
+
+void remove_from_collision_map(int x, int y) {
+	getCollisionIndices(x, y);
+	collisionBin[index] = index4 ^ collisionBin[index];
 }
 
 void init_level11(void) {
@@ -106,12 +117,13 @@ void init_level11(void) {
 	
 	numBlocks = sizeof(level_11_blocks_X);
 	
-	index4 = 4;
-	for(index = 0; index < numBlocks; ++index) {
-		SPRITES[index4++] = level_11_blocks_Y[index];
-		SPRITES[index4++] = 0x03;
-		SPRITES[index4++] = 0;
-		SPRITES[index4++] = level_11_blocks_X[index];
+	index6 = 4;
+	for(index5 = 0; index5 < numBlocks; ++index5) {
+		SPRITES[index6++] = level_11_blocks_Y[index5];
+		SPRITES[index6++] = 0x03;
+		SPRITES[index6++] = 0;
+		SPRITES[index6++] = level_11_blocks_X[index5];
+		add_to_collision_map(level_11_blocks_X[index5], level_11_blocks_Y[index5]);
 	}
 	
 	Wait_Vblank();
@@ -127,13 +139,17 @@ void move_logic (void) {
 
 		//TODO can save some of the iterating blocks if we don't check when we know background check passed
 		getCollisionIndices(X1, SPRITES[0]);
-		collidesWithBlock(X1, SPRITES[0]);
 
 		//If block next to you can be stood on
-		if((collisionBin[index] & index4) != 0 || blockCollision != 0) {
-			//Make sure above isn't occupied
-			collidesWithBlock(X1, Y1);
-			if((collisionBin[index - 4] & index4) == 0 && blockCollision == 0) {
+		if((collisionBin[index] & index4) != 0 && //something on side to stand on
+		   (collisionBin[index - 4] & index4) == 0 && //nothing above it to block you
+		   (holdingBlock == 0 || (collisionBin[index - 8] & index4) == 0)){
+				  
+			//Check diagnols
+			getCollisionIndices(SPRITES[3], SPRITES[0]);
+			
+			if((collisionBin[index - 4] & index4) == 0 && //nothing above you to block on diagnol
+			   (holdingBlock == 0 || (collisionBin[index - 8] & index4) == 0)){
 				//TODO Make sure the diagnol isn't occupied
 				SPRITES[0] = Y1;
 				SPRITES[3] = X1;
@@ -153,26 +169,28 @@ void move_logic (void) {
 	else if(((joypad1 & DOWN) != 0) && ((joypad1old & DOWN) == 0)) {
 		if(holdingBlock == 0) {
 			if(facingLeft == 0) {
-				for(index = 1; (index - 1) < numBlocks; ++index) {
+				for(index5 = 1; (index5 - 1) < numBlocks; ++index5) {
 					//TODO detect if wall above
-					if(SPRITES[4*index] == SPRITES[0] && (SPRITES[4*index + 3] == (SPRITES[3] + 8))) {
-						holdingBlock = index;
+					if(SPRITES[4*index5] == SPRITES[0] && (SPRITES[4*index5 + 3] == (SPRITES[3] + 8))) {
+						remove_from_collision_map(SPRITES[4*index5 + 3], SPRITES[4*index5]);
+						holdingBlock = index5;
 						break;
 					}
 				}
 			}
 			else {
-				for(index = 1; (index  - 1) < numBlocks; ++index) {
+				for(index5 = 1; (index5  - 1) < numBlocks; ++index5) {
 					//TODO detect if wall above
-					if(SPRITES[4*index] == SPRITES[0] && (SPRITES[4*index + 3] == (SPRITES[3] - 8))) {
-						holdingBlock = index;
+					if(SPRITES[4*index5] == SPRITES[0] && (SPRITES[4*index5 + 3] == (SPRITES[3] - 8))) {
+						remove_from_collision_map(SPRITES[4*index5 + 3], SPRITES[4*index5]);
+						holdingBlock = index5;
 						break;
 					}
 				}
 			}
 		}
 		else {
-			//Not holding a block so check if we can pick one up
+			//holding a block so check if we can put one down
 			//TODO make sure there isn't anything in the way
 			getCollisionIndices(SPRITES[3] + (facingLeft ? -8 : 8), SPRITES[0] - 8);
 
@@ -182,14 +200,12 @@ void move_logic (void) {
 
 				//Drop due to gravity (if done anywhere else, you'd need to check if a block has moved before applying gravity)
 				getCollisionIndices(SPRITES[holdingBlock*4 + 3], SPRITES[holdingBlock*4] + 8);
-				collidesWithBlock(SPRITES[holdingBlock*4 + 3], SPRITES[0] + 8);
 				while((collisionBin[index] & index4) == 0 && blockCollision == 0) {
 						SPRITES[holdingBlock*4] += 8;
 						index += 4; //Try directly below
-						collidesWithBlock(SPRITES[holdingBlock*4 + 3], SPRITES[holdingBlock*4] + 8);
 				}
 
-				
+				add_to_collision_map(SPRITES[holdingBlock*4 + 3], SPRITES[holdingBlock*4]);
 				holdingBlock = 0;
 			}
 		}
@@ -204,7 +220,7 @@ void move_logic (void) {
 	}
 }
 
-//Changes index, index4
+//Changes index to where in collision bin, index4 to which bit
 void getCollisionIndices(int x, int y) {
 	index = (y/8);
 	index = index*4 + (x/64);
@@ -214,32 +230,16 @@ void getCollisionIndices(int x, int y) {
 	index4 = 0x80 >> (index4/8);
 }
 
-//Changes blockCollision
-void collidesWithBlock(int x, int y) {
-	for(blockCollision = 1; (blockCollision - 1) < numBlocks; ++blockCollision) {
-		if(SPRITES[4*blockCollision] == y && SPRITES[4*blockCollision + 3] == x) {
-			return;
-		}
-	}
-
-	blockCollision = 0;
-}
-
 
 void update_sprites (void) {
-	//TODO remove for production
-	//draw_location();
 	//Check against background
 	getCollisionIndices(X1, Y1);
 
-	if((collisionBin[index] & index4) == 0) {
-		collidesWithBlock(X1, Y1); //leaves index == 1 if true
-
-		if(blockCollision == 0) {
-			SPRITES[0] = Y1;
-			SPRITES[2] = facingLeft;
-			SPRITES[3] = X1;
-		}
+	if((collisionBin[index] & index4) == 0 &&
+		(holdingBlock == 0 || (collisionBin[index - 4] & index4) == 0)) {
+		SPRITES[0] = Y1;
+		SPRITES[2] = facingLeft;
+		SPRITES[3] = X1;
 	}
 	else {
 		//TODO might not need this with it below
@@ -247,15 +247,11 @@ void update_sprites (void) {
 		X1 = SPRITES[3];
 	}
 
-	//TODO check diagnol for collision
-	//TODO check collision on held block
-
+	//Fall if need be
 	getCollisionIndices(SPRITES[3], SPRITES[0] + 8);
-	collidesWithBlock(SPRITES[3], SPRITES[0] + 8);
 	while((collisionBin[index] & index4) == 0 && blockCollision == 0) {
 			SPRITES[0] += 8;
 			index += 4; //Try directly below
-			collidesWithBlock(SPRITES[3], SPRITES[0] + 8);
 	}
 
 	Y1 = SPRITES[0];

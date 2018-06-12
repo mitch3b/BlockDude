@@ -26,6 +26,8 @@ unsigned char NMI_flag;
 unsigned char Frame_Count;
 unsigned char index;
 unsigned char index4;
+unsigned char index5;
+unsigned char index6;
 unsigned char blockCollision;
 unsigned char numBlocks;
 unsigned char doorX;
@@ -124,7 +126,7 @@ void update_sprites (void);
 void check_endlevel(void);
 void draw_location(void);
 void getCollisionIndices(int x, int y);
-void collidesWithBlock(int x, int y);
+void add_to_collision_map(int x, int y);
 
 void __fastcall__ memcpy (void* dest, const void* src, int count);
 void Wait_Vblank(void);
