@@ -61,7 +61,7 @@ void init_level1(void) {
 	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
 	PPU_ADDRESS = 0x00;
 	UnRLE(Level1);	// uncompresses our data
-	
+
 	X1 = 0xB0;//TODO this isnt right
 	Y1 = 0x70;
 	doorX = 0x38;
@@ -71,9 +71,9 @@ void init_level1(void) {
 
 	SPRITES[1] = 0x10;
 	SPRITES[2] = facingLeft;
-	
+
 	numBlocks = sizeof(level_1_blocks_X);
-	
+
 	index6 = 4;
 	for(index5 = 0; index5 < numBlocks; ++index5) {
 		SPRITES[index6++] = level_1_blocks_Y[index5];
@@ -100,10 +100,10 @@ void init_level11(void) {
 	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
 	PPU_ADDRESS = 0x00;
 	UnRLE(Level11);	// uncompresses our data
-	
+
 	for(index = 0 ; index < sizeof(collisionBin11) ; index++) {
 		collisionBin[index] = collisionBin11[index];
-	}	
+	}
 
 	X1 = 0x70;
 	Y1 = 0x48;
@@ -114,9 +114,9 @@ void init_level11(void) {
 
 	SPRITES[1] = 0x10;
 	SPRITES[2] = facingLeft;
-	
+
 	numBlocks = sizeof(level_11_blocks_X);
-	
+
 	index6 = 4;
 	for(index5 = 0; index5 < numBlocks; ++index5) {
 		SPRITES[index6++] = level_11_blocks_Y[index5];
@@ -125,7 +125,7 @@ void init_level11(void) {
 		SPRITES[index6++] = level_11_blocks_X[index5];
 		add_to_collision_map(level_11_blocks_X[index5], level_11_blocks_Y[index5]);
 	}
-	
+
 	Wait_Vblank();
 	All_On();
 	Reset_Scroll();
@@ -144,10 +144,10 @@ void move_logic (void) {
 		if((collisionBin[index] & index4) != 0 && //something on side to stand on
 		   (collisionBin[index - 4] & index4) == 0 && //nothing above it to block you
 		   (holdingBlock == 0 || (collisionBin[index - 8] & index4) == 0)){
-				  
+
 			//Check diagnols
 			getCollisionIndices(SPRITES[3], SPRITES[0]);
-			
+
 			if((collisionBin[index - 4] & index4) == 0 && //nothing above you to block on diagnol
 			   (holdingBlock == 0 || (collisionBin[index - 8] & index4) == 0)){
 				//TODO Make sure the diagnol isn't occupied
@@ -168,23 +168,22 @@ void move_logic (void) {
 	}
 	else if(((joypad1 & DOWN) != 0) && ((joypad1old & DOWN) == 0)) {
 		if(holdingBlock == 0) {
-			if(facingLeft == 0) {
-				for(index5 = 1; (index5 - 1) < numBlocks; ++index5) {
-					//TODO detect if wall above
-					if(SPRITES[4*index5] == SPRITES[0] && (SPRITES[4*index5 + 3] == (SPRITES[3] + 8))) {
-						remove_from_collision_map(SPRITES[4*index5 + 3], SPRITES[4*index5]);
-						holdingBlock = index5;
-						break;
-					}
-				}
-			}
-			else {
-				for(index5 = 1; (index5  - 1) < numBlocks; ++index5) {
-					//TODO detect if wall above
-					if(SPRITES[4*index5] == SPRITES[0] && (SPRITES[4*index5 + 3] == (SPRITES[3] - 8))) {
-						remove_from_collision_map(SPRITES[4*index5 + 3], SPRITES[4*index5]);
-						holdingBlock = index5;
-						break;
+			//Check above player is empty
+			getCollisionIndices(SPRITES[3], SPRITES[0] - 8);
+
+			if((collisionBin[index] & index4) == 0) {
+				index6 = (facingLeft == 0) ? 8 : -8;
+				//Check above block is empty
+				getCollisionIndices(SPRITES[3] + index6, SPRITES[0] - 8);
+
+				if((collisionBin[index] & index4) == 0) {
+					//Check if block is there to pick up
+					for(index5 = 1; (index5 - 1) < numBlocks; ++index5) {
+						if(SPRITES[4*index5] == SPRITES[0] && (SPRITES[4*index5 + 3] == (SPRITES[3] + index6))) {
+							remove_from_collision_map(SPRITES[4*index5 + 3], SPRITES[4*index5]);
+							holdingBlock = index5;
+							break;
+						}
 					}
 				}
 			}

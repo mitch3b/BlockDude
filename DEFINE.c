@@ -27,7 +27,7 @@ unsigned char Frame_Count;
 unsigned char index;
 unsigned char index4;
 unsigned char index5;
-unsigned char index6;
+signed char index6;
 unsigned char blockCollision;
 unsigned char numBlocks;
 unsigned char doorX;
