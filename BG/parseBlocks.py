@@ -1,4 +1,4 @@
-with open("D:\Documents\Programming\BlockDude\BG\Level3.h") as f:
+with open("D:\Documents\Programming\BlockDude\BG\Level2Collision.h") as f:
 	lineCount = 0
 	outputX = "const unsigned char level__blocks_X[] = {"
 	outputY = "const unsigned char level__blocks_Y[] = {"
