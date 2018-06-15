@@ -19,12 +19,12 @@ _Get_Input:
 	sta _joypad1old
 	lda _joypad2
 	sta _joypad2old
-	
+
 	ldx #$01	;strobe controller 1
 	stx $4016
 	dex
 	stx $4016
-	
+
 	ldy #$08
 Get_Input2:		;get first read, store them as a test
 	lda $4016
@@ -37,13 +37,13 @@ Get_Input2:		;get first read, store them as a test
 	rol _joypad2test
 	dey
 	bne Get_Input2
-	
+
 GetInputFixBug:
 	ldx #$01	;restrobe strobe controller 1
 	stx $4016
 	dex
 	stx $4016
-	
+
 	ldy #$08
 Get_Input3:		;read again, store them as joypads
 	lda $4016
@@ -56,7 +56,7 @@ Get_Input3:		;read again, store them as joypads
 	rol _joypad2
 	dey
 	bne Get_Input3
-	
+
 CompareInput:
 	lda _joypad1
 	cmp _joypad1test
@@ -65,22 +65,22 @@ CompareInput:
 	cmp _joypad2test
 	bne :+
 	rts				;if same, done
-	
+
 :	lda _joypad1
 	sta _joypad1test
 	lda _joypad2
 	sta _joypad2test
 
 	jmp GetInputFixBug ;if different, reread
-	
 
-	
+
+
 _Wait_Vblank:
 	lda $2002
 	bpl _Wait_Vblank
 	rts
-	
-	
+
+
 _UnRLE:
 	tay
 	stx <RLE_HIGH

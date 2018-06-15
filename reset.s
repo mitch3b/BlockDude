@@ -3,7 +3,7 @@
 	.import _main
 	.export __STARTUP__:absolute=1
 	.importzp _NMI_flag, _Frame_Count
-	.importzp _Horiz_scroll, _Nametable
+	.importzp _Horiz_scroll, _Nametable, _Erase_X, _Erase_Y, _Block_X, _Block_Y
 
 
 ; Linker generated symbols
@@ -143,6 +143,18 @@ nmi:
 	lda #$1e
 	sta $2001 ;screen on
 	lda $2002 ;reset the latch
+	lda _Block_Y ; TODO I bet this would be faster to check if there's something to write
+  sta $2006
+	lda _Block_X
+  sta $2006
+	lda #$03
+	sta $2007
+	lda _Erase_Y
+  sta $2006
+	lda _Erase_X
+  sta $2006
+	lda #$01
+  sta $2007
 	lda _Horiz_scroll
 	sta $2005
 	lda #$ff

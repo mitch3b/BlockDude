@@ -4,6 +4,7 @@ void main (void) {
 	All_Off(); // turn off screen
 	init_level1();
 	gameState = 3; //0 - title, 1 - menu, 2 - scroll, 3 - game
+	currentLevel = 1;
 
 	Load_Palette();
 	Reset_Scroll();
@@ -21,9 +22,31 @@ void main (void) {
 			check_endlevel();
 		}
 		else if (gameState == 4) {
-			init_level11();
+			currentLevel++;
+
+			hide_sprites();
+			All_Off();
+
+			switch(currentLevel) {
+				case 2:
+					init_level2();
+					break;
+				case 3:
+					init_level3();
+					break;
+				case 4:
+					init_level11();
+					break;
+			}
+
+			Wait_Vblank();
+			All_On();
+			Reset_Scroll();
+
 			gameState = 3;
 		}
+		//TODO remove ... just for debugging
+		draw_location();
 
 		NMI_flag = 0;
 	}
@@ -57,32 +80,116 @@ void Load_Palette (void) {
 	}
 }
 
+void init_level(void) {
+	SPRITES[4] = 0;
+	SPRITES[5] = 0x03;
+	SPRITES[6] = 0;
+	SPRITES[7] = 0;
+
+	holdingBlock = 0;
+	isHoldingBlock = 0;
+	facingLeft = 0;
+	Block_X = 0;
+	Block_Y = 0;
+	Erase_X = 0;
+	Erase_Y = 0;
+
+	SPRITES[1] = 0x10;
+	SPRITES[2] = facingLeft;
+}
+
 void init_level1(void) {
 	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
 	PPU_ADDRESS = 0x00;
-	UnRLE(Level1);	// uncompresses our data
+	UnRLE(Level1WithBox);	// uncompresses our data
 
 	X1 = 0xB0;//TODO this isnt right
 	Y1 = 0x70;
 	doorX = 0x38;
 	doorY = 0x80;
-	holdingBlock = 0;
-	facingLeft = 0;
 
-	SPRITES[1] = 0x10;
-	SPRITES[2] = facingLeft;
-
+	init_level();
 	numBlocks = sizeof(level_1_blocks_X);
 
 	index6 = 4;
 	for(index5 = 0; index5 < numBlocks; ++index5) {
-		SPRITES[index6++] = level_1_blocks_Y[index5];
-		SPRITES[index6++] = 0x03;
-		SPRITES[index6++] = 0;
-		SPRITES[index6++] = level_1_blocks_X[index5];
-		add_to_collision_map(level_1_blocks_X[index5], level_1_blocks_Y[index5]);
+		blocks_X[index5] = level_1_blocks_X[index5];
+		blocks_Y[index5] = level_1_blocks_Y[index5];
 	}
 }
+
+void init_level2(void) {
+	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+	PPU_ADDRESS = 0x00;
+	UnRLE(Level2);	// uncompresses our data
+
+	for(index = 0 ; index < sizeof(collisionBin2) ; index++) {
+		collisionBin[index] = collisionBin2[index];
+	}
+
+	X1 = 0xB8;
+	Y1 = 0x80;
+	doorX = 0x30;
+	doorY = 0x68;
+
+	init_level();
+	numBlocks = sizeof(level_2_blocks_X);
+
+	index6 = 4;
+	for(index5 = 0; index5 < numBlocks; ++index5) {
+		blocks_X[index5] = level_2_blocks_X[index5];
+		blocks_Y[index5] = level_2_blocks_Y[index5];
+	}
+}
+
+void init_level3(void) {
+	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+	PPU_ADDRESS = 0x00;
+	UnRLE(Level3);	// uncompresses our data
+
+	for(index = 0 ; index < sizeof(collisionBin3) ; index++) {
+		collisionBin[index] = collisionBin3[index];
+	}
+
+	X1 = 0x78;
+	Y1 = 0x78;
+	doorX = 0x38;
+	doorY = 0x90;
+
+	init_level();
+	numBlocks = sizeof(level_3_blocks_X);
+
+	index6 = 4;
+	for(index5 = 0; index5 < numBlocks; ++index5) {
+		blocks_X[index5] = level_3_blocks_X[index5];
+		blocks_Y[index5] = level_3_blocks_Y[index5];
+	}
+}
+
+void init_level11(void) {
+	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+	PPU_ADDRESS = 0x00;
+	UnRLE(Level11WithBox);	// uncompresses our data
+
+	for(index = 0 ; index < sizeof(collisionBin11) ; index++) {
+		collisionBin[index] = collisionBin11[index];
+	}
+
+	X1 = 0x70;
+	Y1 = 0x48;
+	doorX = 0xC8;
+	doorY = 0x40;
+
+	init_level();
+	numBlocks = sizeof(level_11_blocks_X);
+
+	index6 = 4;
+	for(index5 = 0; index5 < numBlocks; ++index5) {
+		blocks_X[index5] = level_11_blocks_X[index5];
+		blocks_Y[index5] = level_11_blocks_Y[index5];
+	}
+}
+
 
 void add_to_collision_map(int x, int y) {
 	getCollisionIndices(x, y);
@@ -94,41 +201,43 @@ void remove_from_collision_map(int x, int y) {
 	collisionBin[index] = index4 ^ collisionBin[index];
 }
 
-void init_level11(void) {
-	hide_sprites();
-	All_Off();
-	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
-	PPU_ADDRESS = 0x00;
-	UnRLE(Level11);	// uncompresses our data
+//TODO 120 is a problem
+void remove_from_background(int x, int y) {
+	//Translate to background tile
+	/*y = y/8;
+	x = x/8;
 
-	for(index = 0 ; index < sizeof(collisionBin11) ; index++) {
-		collisionBin[index] = collisionBin11[index];
-	}
+	// 32*y + x -> total
+	// total / 256 first mem address
+	// total % 256 second address
+	Erase_Y = 0x20 + (y/8);
+	Erase_X = 32*(index % 8) + x;
+	*/
 
-	X1 = 0x70;
-	Y1 = 0x48;
-	doorX = 0xC8;
-	doorY = 0x40;
-	holdingBlock = 0;
-	facingLeft = 0;
+	index = y/8;
+	Erase_Y = 0x20 + (index/8);
+	Erase_X = 32*(index % 8) + (x/8);
+}
 
-	SPRITES[1] = 0x10;
-	SPRITES[2] = facingLeft;
+//TODO might want to consolidate with above
+void add_block_to_background(int x, int y) {
+	index = y/8;
+	Block_Y = 0x20 + (index/8);
+	Block_X = 32*(index % 8) + (x/8);
 
-	numBlocks = sizeof(level_11_blocks_X);
+	//In case we're adding the block to where we just erased it (erase happens second)
+	Erase_Y = 0;
+	Erase_X = 0;
+	//Translate to background tile
+	/*y = y/8;
+	x = x/8;
 
-	index6 = 4;
-	for(index5 = 0; index5 < numBlocks; ++index5) {
-		SPRITES[index6++] = level_11_blocks_Y[index5];
-		SPRITES[index6++] = 0x03;
-		SPRITES[index6++] = 0;
-		SPRITES[index6++] = level_11_blocks_X[index5];
-		add_to_collision_map(level_11_blocks_X[index5], level_11_blocks_Y[index5]);
-	}
-
-	Wait_Vblank();
-	All_On();
-	Reset_Scroll();
+	// 32*y + x -> total
+	// total / 256 first mem address
+	// total % 256 second address
+	Block_Y = 0x20 + (y/8);
+	Block_X = 32*(index % 8) + x;
+	*/
 }
 
 void move_logic (void) {
@@ -143,13 +252,13 @@ void move_logic (void) {
 		//If block next to you can be stood on
 		if((collisionBin[index] & index4) != 0 && //something on side to stand on
 		   (collisionBin[index - 4] & index4) == 0 && //nothing above it to block you
-		   (holdingBlock == 0 || (collisionBin[index - 8] & index4) == 0)){
+		   (isHoldingBlock == 0 || (collisionBin[index - 8] & index4) == 0)){
 
 			//Check diagnols
 			getCollisionIndices(SPRITES[3], SPRITES[0]);
 
 			if((collisionBin[index - 4] & index4) == 0 && //nothing above you to block on diagnol
-			   (holdingBlock == 0 || (collisionBin[index - 8] & index4) == 0)){
+			   (isHoldingBlock == 0 || (collisionBin[index - 8] & index4) == 0)){
 				//TODO Make sure the diagnol isn't occupied
 				SPRITES[0] = Y1;
 				SPRITES[3] = X1;
@@ -167,7 +276,8 @@ void move_logic (void) {
 		}
 	}
 	else if(((joypad1 & DOWN) != 0) && ((joypad1old & DOWN) == 0)) {
-		if(holdingBlock == 0) {
+		if(isHoldingBlock == 0) {
+
 			//Check above player is empty
 			getCollisionIndices(SPRITES[3], SPRITES[0] - 8);
 
@@ -178,10 +288,12 @@ void move_logic (void) {
 
 				if((collisionBin[index] & index4) == 0) {
 					//Check if block is there to pick up
-					for(index5 = 1; (index5 - 1) < numBlocks; ++index5) {
-						if(SPRITES[4*index5] == SPRITES[0] && (SPRITES[4*index5 + 3] == (SPRITES[3] + index6))) {
-							remove_from_collision_map(SPRITES[4*index5 + 3], SPRITES[4*index5]);
+					for(index5 = 0; index5 < numBlocks; ++index5) {
+						if(blocks_Y[index5] == SPRITES[0] && (blocks_X[index5] == (SPRITES[3] + index6))) {
+							remove_from_collision_map(blocks_X[index5], blocks_Y[index5]);
+							remove_from_background(blocks_X[index5], blocks_Y[index5]);
 							holdingBlock = index5;
+							isHoldingBlock = 1;
 							break;
 						}
 					}
@@ -194,18 +306,23 @@ void move_logic (void) {
 			getCollisionIndices(SPRITES[3] + (facingLeft ? -8 : 8), SPRITES[0] - 8);
 
 			if((collisionBin[index] & index4) == 0) {
-				//TODO theres a lot more math than needed here
-				SPRITES[holdingBlock*4 + 3] += (facingLeft != 0) ? (-8) : 8;
+				blocks_X[holdingBlock] = SPRITES[7];
+				blocks_Y[holdingBlock] = SPRITES[4];
+
+				blocks_X[holdingBlock] += (facingLeft != 0) ? (-8) : 8;
 
 				//Drop due to gravity (if done anywhere else, you'd need to check if a block has moved before applying gravity)
-				getCollisionIndices(SPRITES[holdingBlock*4 + 3], SPRITES[holdingBlock*4] + 8);
+				getCollisionIndices(blocks_X[holdingBlock], blocks_Y[holdingBlock] + 8);
 				while((collisionBin[index] & index4) == 0 && blockCollision == 0) {
-						SPRITES[holdingBlock*4] += 8;
+						blocks_Y[holdingBlock] += 8;
 						index += 4; //Try directly below
 				}
 
-				add_to_collision_map(SPRITES[holdingBlock*4 + 3], SPRITES[holdingBlock*4]);
-				holdingBlock = 0;
+				add_to_collision_map(blocks_X[holdingBlock], blocks_Y[holdingBlock]);
+				add_block_to_background(blocks_X[holdingBlock], blocks_Y[holdingBlock]);
+				SPRITES[4] = 0;
+				SPRITES[7] = 0;
+				isHoldingBlock = 0;
 			}
 		}
 	}
@@ -235,7 +352,7 @@ void update_sprites (void) {
 	getCollisionIndices(X1, Y1);
 
 	if((collisionBin[index] & index4) == 0 &&
-		(holdingBlock == 0 || (collisionBin[index - 4] & index4) == 0)) {
+		(isHoldingBlock == 0 || (collisionBin[index - 4] & index4) == 0)) {
 		SPRITES[0] = Y1;
 		SPRITES[2] = facingLeft;
 		SPRITES[3] = X1;
@@ -256,9 +373,9 @@ void update_sprites (void) {
 	Y1 = SPRITES[0];
 	X1 = SPRITES[3];
 
-	if(holdingBlock != 0) {
-		SPRITES[holdingBlock*4] = SPRITES[0] - 8;
-		SPRITES[holdingBlock*4 + 3] = SPRITES[3];
+	if(isHoldingBlock != 0) {
+		SPRITES[4] = SPRITES[0] - 8;
+		SPRITES[7] = SPRITES[3];
 	}
 }
 
@@ -282,10 +399,10 @@ void check_endlevel(void) {
 void draw_location(void) {
 	//sprites 57-63
 	//Get index into collisionBin
-	//index = index;
+	index = SPRITES[3];
 
 	//Find the bit for that collisionBin Index
-	//index4 = facingLeft;
+	index4 = SPRITES[0];
 	//x 100's
 	SPRITES[228] = 0x10;
 	SPRITES[229] = 0xD0 + ((index / 100) % 10);
