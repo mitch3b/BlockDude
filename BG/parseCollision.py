@@ -1,4 +1,4 @@
-with open("/Users/mitchken/Documents/NesDev/BlockDude/BG/Level3Collision.h") as f:
+with open("BG/TestLevelCollision.h") as f:
 	for line in f:
 		tokens = line.split(',')
 		midLine = 0;
@@ -22,7 +22,7 @@ with open("/Users/mitchken/Documents/NesDev/BlockDude/BG/Level3Collision.h") as 
 
 			if(midLine == 0):
 				midLine = 1
-				print("0x" + tempNum1 + ", 0x" + tempNum2 + ", " )
+				print("0x" + tempNum1 + ", 0x" + tempNum2 + ", ", end="" )
 			else:
 				midLine = 0
 				print("0x" + tempNum1 + ", 0x" + tempNum2 + "," )

@@ -2,8 +2,7 @@
 
 void main (void) {
 	All_Off(); // turn off screen
-	init_level1();
-	gameState = 3; //0 - title, 1 - menu, 2 - scroll, 3 - game
+	gameState = 3; //0 - title, 1 - load menu, 2 in menu, 3 - load level menu, 4 - wait for start, 5 load level, 6 in level 
 	currentLevel = 1;
 
 	Load_Palette();
@@ -16,18 +15,19 @@ void main (void) {
 		//every_frame();	// moved this to the nmi code in reset.s for greater stability
 		Get_Input();
 
-		if(gameState == 3) {
+		if(gameState == 6) {
 			move_logic();
 			update_sprites();
 			check_endlevel();
 		}
-		else if (gameState == 4) {
-			currentLevel++;
-
+		else if (gameState == 5) { //Load level
 			hide_sprites();
 			All_Off();
 
 			switch(currentLevel) {
+				case 1:
+					init_level1();
+					break;
 				case 2:
 					init_level2();
 					break;
@@ -43,7 +43,34 @@ void main (void) {
 			All_On();
 			Reset_Scroll();
 
-			gameState = 3;
+			gameState = 6;
+		}
+		else if (gameState == 3) { //Pre level menu
+			hide_sprites();
+			All_Off();
+
+			switch(currentLevel) {
+				case 1:
+					init_menu1();
+					break;
+				case 2:
+					
+					break;
+				case 3:
+					
+					break;
+				case 4:
+
+					break;
+			}
+
+			Wait_Vblank();
+			All_On();
+			Reset_Scroll();
+			gameState = 4;
+		}
+		else if (gameState == 4) {
+			testForStart();
 		}
 		//TODO remove ... just for debugging
 		draw_location();
@@ -96,6 +123,39 @@ void init_level(void) {
 
 	SPRITES[1] = 0x10;
 	SPRITES[2] = facingLeft;
+}
+
+void init_test_level(void) {
+	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+	PPU_ADDRESS = 0x00;
+	UnRLE(TestLevel);	// uncompresses our data
+	
+	
+	for(index = 0 ; index < sizeof(collisionBinTestLevel) ; index++) {
+		collisionBin[index] = collisionBinTestLevel[index];
+	}
+
+	X1 = 0xB0;
+	Y1 = 0x70;
+	doorX = 0x00;
+	doorY = 0x00;
+
+	init_level();
+	numBlocks = sizeof(level_test_blocks_X);
+
+	index6 = 4;
+	for(index5 = 0; index5 < numBlocks; ++index5) {
+		blocks_X[index5] = level_test_blocks_X[index5];
+		blocks_Y[index5] = level_test_blocks_Y[index5];
+	}
+}
+
+void init_menu1(void) {
+	hide_sprites();
+	
+	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+	PPU_ADDRESS = 0x00;
+	UnRLE(Level1Menu);	// uncompresses our data
 }
 
 void init_level1(void) {
@@ -238,6 +298,12 @@ void add_block_to_background(int x, int y) {
 	Block_Y = 0x20 + (y/8);
 	Block_X = 32*(index % 8) + x;
 	*/
+}
+
+void testForStart(void) {
+	if(((joypad1 & START) != 0) && ((joypad1old & START) == 0)) {
+		gameState = 5;
+	}
 }
 
 void move_logic (void) {
@@ -391,7 +457,8 @@ void hide_sprites (void) {
 void check_endlevel(void) {
 	if(SPRITES[0] == doorY && SPRITES[3] == doorX) {
 		//Level complete
-		gameState = 4;
+		currentLevel++;
+		gameState = 5; //TODO this should be 3 but don't have other level menus yet
 	}
 }
 
