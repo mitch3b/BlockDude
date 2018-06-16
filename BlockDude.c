@@ -307,9 +307,7 @@ void testForStart(void) {
 }
 
 void move_logic (void) {
-	if(((joypad1 & UP) != 0) && 
-	          ((buttonBeingHeld == UP && numFramesInMovement > 10) ||
-			   ((joypad1old & UP) == 0))) {
+	if(isButtonPressed(UP)) {
 		buttonBeingHeld = UP;
 		numFramesInMovement = 0;
 		
@@ -346,7 +344,7 @@ void move_logic (void) {
 			Y1 = SPRITES[0];
 		}
 	}
-	else if(((joypad1 & DOWN) != 0) && ((joypad1old & DOWN) == 0)) {
+	else if(isButtonPressed(DOWN)) {
 		if(isHoldingBlock == 0) {
 
 			//Check above player is empty
@@ -397,17 +395,13 @@ void move_logic (void) {
 			}
 		}
 	}
-	else if(((joypad1 & RIGHT) != 0) && 
-	          ((buttonBeingHeld == RIGHT && numFramesInMovement > 10) ||
-			   ((joypad1old & RIGHT) == 0))) {
+	else if(isButtonPressed(RIGHT)) {
 		X1 = X1 + 8;
 		facingLeft = 0;
 		buttonBeingHeld = RIGHT;
 		numFramesInMovement = 0;
 	}
-	else if(((joypad1 & LEFT) != 0) && 
-	          ((buttonBeingHeld == LEFT && numFramesInMovement > 10) ||
-			   ((joypad1old & LEFT) == 0))) {
+	else if(isButtonPressed(LEFT)) {
 		X1 = X1 - 8;
 		facingLeft = 0x40;
 		buttonBeingHeld = LEFT;
@@ -418,6 +412,12 @@ void move_logic (void) {
 	}
 	
 	numFramesInMovement++;
+}
+
+unsigned char isButtonPressed(unsigned char button) {
+	return (((joypad1 & button) != 0) && 
+	          ((buttonBeingHeld == button && numFramesInMovement > 10) ||
+			   ((joypad1old & button) == 0)));
 }
 
 //Changes index to where in collision bin, index4 to which bit
