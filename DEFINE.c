@@ -28,6 +28,8 @@ unsigned char index;
 unsigned char index4;
 unsigned char index5;
 signed char index6;
+unsigned char numFramesInMovement;
+unsigned char buttonBeingHeld;
 unsigned char blockCollision;
 unsigned char numBlocks;
 unsigned char doorX;

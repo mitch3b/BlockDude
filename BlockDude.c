@@ -307,7 +307,12 @@ void testForStart(void) {
 }
 
 void move_logic (void) {
-	if(((joypad1 & UP) != 0) && ((joypad1old & UP) == 0)) {
+	if(((joypad1 & UP) != 0) && 
+	          ((buttonBeingHeld == UP && numFramesInMovement > 10) ||
+			   ((joypad1old & UP) == 0))) {
+		buttonBeingHeld = UP;
+		numFramesInMovement = 0;
+		
 		//See if we can move up in the direction we're facing
 		X1 = SPRITES[3] + (facingLeft ? -8 : 8);
 		Y1 = SPRITES[0] - 8;
@@ -392,14 +397,27 @@ void move_logic (void) {
 			}
 		}
 	}
-	else if(((joypad1 & RIGHT) != 0) && ((joypad1old & RIGHT) == 0)) {
+	else if(((joypad1 & RIGHT) != 0) && 
+	          ((buttonBeingHeld == RIGHT && numFramesInMovement > 10) ||
+			   ((joypad1old & RIGHT) == 0))) {
 		X1 = X1 + 8;
 		facingLeft = 0;
+		buttonBeingHeld = RIGHT;
+		numFramesInMovement = 0;
 	}
-	else if(((joypad1 & LEFT) != 0) && ((joypad1old & LEFT) == 0)) {
+	else if(((joypad1 & LEFT) != 0) && 
+	          ((buttonBeingHeld == LEFT && numFramesInMovement > 10) ||
+			   ((joypad1old & LEFT) == 0))) {
 		X1 = X1 - 8;
 		facingLeft = 0x40;
+		buttonBeingHeld = LEFT;
+		numFramesInMovement = 0;
 	}
+	else if (joypad1 == 0) {
+		buttonBeingHeld = 3; //NOT A VALID BUTTON
+	}
+	
+	numFramesInMovement++;
 }
 
 //Changes index to where in collision bin, index4 to which bit
@@ -466,7 +484,7 @@ void check_endlevel(void) {
 void draw_location(void) {
 	//sprites 57-63
 	//Get index into collisionBin
-	index = SPRITES[3];
+	index = numFramesInMovement;
 
 	//Find the bit for that collisionBin Index
 	index4 = SPRITES[0];
