@@ -49,20 +49,7 @@ void main (void) {
 			hide_sprites();
 			All_Off();
 
-			switch(currentLevel) {
-				case 1:
-					init_menu1();
-					break;
-				case 2:
-					
-					break;
-				case 3:
-					
-					break;
-				case 4:
-
-					break;
-			}
+			init_prelevel_menu();
 
 			Wait_Vblank();
 			All_On();
@@ -150,12 +137,49 @@ void init_test_level(void) {
 	}
 }
 
-void init_menu1(void) {
+void init_prelevel_menu(void) {
 	hide_sprites();
+	//Else you'll get a rogue block drawn :)
+	Erase_X = 0;
+	Erase_Y = 0;
+	Block_X = 0;
+	Block_Y = 0;
 	
 	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
 	PPU_ADDRESS = 0x00;
-	UnRLE(Level1Menu);	// uncompresses our data
+	UnRLE(LevelMenu);	// uncompresses our data
+
+	//Level
+	SPRITES[0]  = 0x68;
+	SPRITES[1]  = (currentLevel > 9) ? (0xD0 + (currentLevel / 10)) : 0x01; //Only show leading digit if it exists
+	SPRITES[2]  = 0x00;
+	SPRITES[3]  = 0x80;
+	
+	SPRITES[4]  = 0x68;
+	SPRITES[5]  = 0xD0 + (currentLevel % 10);
+	SPRITES[6]  = 0x00;
+	SPRITES[7]  = 0x88;
+	
+	//Password
+	//TODO assign these based on level probably using an array and loop
+	index = 0xBD; // t
+	index4 = 0xAC; // c
+	index5 = 0xE9; // P
+	
+	SPRITES[8]  = 0x78;
+	SPRITES[9]  = index; 
+	SPRITES[10]  = 0x00;
+	SPRITES[11]  = 0x98;
+	
+	SPRITES[12]  = 0x78;
+	SPRITES[13]  = index4; 
+	SPRITES[14]  = 0x00;
+	SPRITES[15]  = 0xA0;
+	
+	SPRITES[16]  = 0x78;
+	SPRITES[17]  = index5; 
+	SPRITES[18]  = 0x00;
+	SPRITES[19]  = 0xA8;
 }
 
 void init_level1(void) {
@@ -263,17 +287,6 @@ void remove_from_collision_map(int x, int y) {
 
 //TODO 120 is a problem
 void remove_from_background(int x, int y) {
-	//Translate to background tile
-	/*y = y/8;
-	x = x/8;
-
-	// 32*y + x -> total
-	// total / 256 first mem address
-	// total % 256 second address
-	Erase_Y = 0x20 + (y/8);
-	Erase_X = 32*(index % 8) + x;
-	*/
-
 	index = y/8;
 	Erase_Y = 0x20 + (index/8);
 	Erase_X = 32*(index % 8) + (x/8);
@@ -288,16 +301,6 @@ void add_block_to_background(int x, int y) {
 	//In case we're adding the block to where we just erased it (erase happens second)
 	Erase_Y = 0;
 	Erase_X = 0;
-	//Translate to background tile
-	/*y = y/8;
-	x = x/8;
-
-	// 32*y + x -> total
-	// total / 256 first mem address
-	// total % 256 second address
-	Block_Y = 0x20 + (y/8);
-	Block_X = 32*(index % 8) + x;
-	*/
 }
 
 void testForStart(void) {
@@ -476,7 +479,7 @@ void check_endlevel(void) {
 	if(SPRITES[0] == doorY && SPRITES[3] == doorX) {
 		//Level complete
 		currentLevel++;
-		gameState = 5; //TODO this should be 3 but don't have other level menus yet
+		gameState = 3;
 	}
 }
 
