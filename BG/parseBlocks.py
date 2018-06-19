@@ -1,7 +1,8 @@
-with open("BG\TestLevelCollision.h") as f:
+level = "6"
+with open("BG/Level" + level + "Collision.h") as f:
 	lineCount = 0
-	outputX = "const unsigned char level__blocks_X[] = {"
-	outputY = "const unsigned char level__blocks_Y[] = {"
+	outputX = "const unsigned char level_" + level + "_blocks_X[] = {"
+	outputY = "const unsigned char level_" + level + "_blocks_Y[] = {"
 	for line in f:
 		tokens = line.split(',')
 		if(len(tokens) == 17):

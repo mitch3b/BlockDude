@@ -35,8 +35,16 @@ void main (void) {
 					init_level3();
 					break;
 				case 4:
-					init_level11();
+					init_level4();
 					break;
+				case 5:
+					init_level5();
+					break;
+				case 6:
+					init_level6();
+					break;
+				default:
+					init_level1();
 			}
 
 			Wait_Vblank();
@@ -307,6 +315,81 @@ void init_level3(void) {
 		blocks_Y[index5] = level_3_blocks_Y[index5];
 	}
 }
+
+void init_level4(void) {
+	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+	PPU_ADDRESS = 0x00;
+	UnRLE(Level4);	// uncompresses our data
+
+	for(index = 0 ; index < sizeof(collisionBin4) ; index++) {
+		collisionBin[index] = collisionBin4[index];
+	}
+
+	X1 = 0xA8;
+	Y1 = 0x68;
+	doorX = 0x28;
+	doorY = 0x78;
+
+	init_level();
+	numBlocks = sizeof(level_4_blocks_X);
+
+	index6 = 4;
+	for(index5 = 0; index5 < numBlocks; ++index5) {
+		blocks_X[index5] = level_4_blocks_X[index5];
+		blocks_Y[index5] = level_4_blocks_Y[index5];
+	}
+}
+
+
+void init_level5(void) {
+	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+	PPU_ADDRESS = 0x00;
+	UnRLE(Level5);	// uncompresses our data
+
+	for(index = 0 ; index < sizeof(collisionBin5) ; index++) {
+		collisionBin[index] = collisionBin5[index];
+	}
+
+	X1 = 0x88;
+	Y1 = 0x78;
+	doorX = 0x30;
+	doorY = 0x78;
+
+	init_level();
+	numBlocks = sizeof(level_5_blocks_X);
+
+	index6 = 4;
+	for(index5 = 0; index5 < numBlocks; ++index5) {
+		blocks_X[index5] = level_5_blocks_X[index5];
+		blocks_Y[index5] = level_5_blocks_Y[index5];
+	}
+}
+
+
+void init_level6(void) {
+	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+	PPU_ADDRESS = 0x00;
+	UnRLE(Level6);	// uncompresses our data
+
+	for(index = 0 ; index < sizeof(collisionBin6) ; index++) {
+		collisionBin[index] = collisionBin6[index];
+	}
+
+	X1 = 0x90; 
+	Y1 = 0x70; 
+	doorX = 0x30;
+	doorY = 0x50;
+
+	init_level();
+	numBlocks = sizeof(level_6_blocks_X);
+
+	index6 = 4;
+	for(index5 = 0; index5 < numBlocks; ++index5) {
+		blocks_X[index5] = level_6_blocks_X[index5];
+		blocks_Y[index5] = level_6_blocks_Y[index5];
+	}
+}
+
 
 void init_level11(void) {
 	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000

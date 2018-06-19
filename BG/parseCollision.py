@@ -1,4 +1,6 @@
-with open("BG/TestLevelCollision.h") as f:
+level = "6"
+with open("BG/Level" + level + "Collision.h") as f:
+	output = "const unsigned char collisionBin" + level + "[] = {";
 	for line in f:
 		tokens = line.split(',')
 		midLine = 0;
@@ -20,9 +22,7 @@ with open("BG/TestLevelCollision.h") as f:
 				    tempNum2 += "1"
 			tempNum2 = hex(int(tempNum2, 2))[2:].zfill(2)
 
-			if(midLine == 0):
-				midLine = 1
-				print("0x" + tempNum1 + ", 0x" + tempNum2 + ", ", end="" )
-			else:
-				midLine = 0
-				print("0x" + tempNum1 + ", 0x" + tempNum2 + "," )
+			output += "0x" + tempNum1 + ", 0x" + tempNum2 + ", "
+
+	output += "};"
+	print(output)
