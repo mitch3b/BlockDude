@@ -2,7 +2,7 @@
 
 void main (void) {
 	All_Off(); // turn off screen
-	gameState = 3; //0 - title, 1 - load menu, 2 in menu, 3 - load level menu, 4 - wait for start, 5 load level, 6 in level 
+	gameState = 1; //0 - title, 1 - load menu, 2 in menu, 3 - load level menu, 4 - wait for start, 5 load level, 6 in level
 	currentLevel = 1;
 
 	Load_Palette();
@@ -58,6 +58,21 @@ void main (void) {
 		}
 		else if (gameState == 4) {
 			testForStart();
+		}
+		else if (gameState == 1) {
+			All_Off();
+			init_title_menu();
+			Wait_Vblank();
+			All_On();
+			Reset_Scroll();
+
+			gameState = 2;
+			currentMenuOption = 0; // 0 New, 1 password, 2 help, 3 exit
+			highlight_menu_option();
+		}
+		else if (gameState == 2) {
+			menu_move_logic();
+			highlight_menu_option();
 		}
 		//TODO remove ... just for debugging
 		draw_location();
@@ -116,8 +131,8 @@ void init_test_level(void) {
 	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
 	PPU_ADDRESS = 0x00;
 	UnRLE(TestLevel);	// uncompresses our data
-	
-	
+
+
 	for(index = 0 ; index < sizeof(collisionBinTestLevel) ; index++) {
 		collisionBin[index] = collisionBinTestLevel[index];
 	}
@@ -137,6 +152,56 @@ void init_test_level(void) {
 	}
 }
 
+void init_title_menu(void) {
+	hide_sprites();
+	//Else you'll get a rogue block drawn :)
+	Erase_X = 0;
+	Erase_Y = 0;
+	Block_X = 0;
+	Block_Y = 0;
+
+	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+	PPU_ADDRESS = 0x00;
+	UnRLE(MenuScreen);	// uncompresses our data
+}
+
+void highlight_menu_option(void) {
+	hide_sprites();//Can be more efficient
+	//First 8 sprites are for highlighting.
+
+	switch(currentMenuOption) {
+		case 0:
+			index = menu_option_new[0];//Starting X
+			index6 = menu_option_new[1];//Num sprites
+			break;
+		case 1:
+			index = menu_option_password[0];//Starting X
+			index6 = menu_option_password[1];//Num sprites
+			break;
+		case 2:
+			index = menu_option_help[0];//Starting X
+			index6 = menu_option_help[1];//Num sprites
+			break;
+		case 3:
+			index = menu_option_exit[0];//Starting X
+			index6 = menu_option_exit[1];//Num sprites
+			break;
+	}
+
+	index4 = 0;
+	for(;index6 > 0 ; index6--) {
+		SPRITES[index4] = 0xB0;
+		index4++;
+		SPRITES[index4] = 0x06;
+		index4++;
+		SPRITES[index4] = 0x20;//TODO set to behind background
+		index4++;
+		SPRITES[index4] = index;
+		index4++;
+		index += 8;
+	}
+}
+
 void init_prelevel_menu(void) {
 	hide_sprites();
 	//Else you'll get a rogue block drawn :)
@@ -144,7 +209,7 @@ void init_prelevel_menu(void) {
 	Erase_Y = 0;
 	Block_X = 0;
 	Block_Y = 0;
-	
+
 	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
 	PPU_ADDRESS = 0x00;
 	UnRLE(LevelMenu);	// uncompresses our data
@@ -154,32 +219,25 @@ void init_prelevel_menu(void) {
 	SPRITES[1]  = (currentLevel > 9) ? (0xD0 + (currentLevel / 10)) : 0x01; //Only show leading digit if it exists
 	SPRITES[2]  = 0x00;
 	SPRITES[3]  = 0x80;
-	
+
 	SPRITES[4]  = 0x68;
 	SPRITES[5]  = 0xD0 + (currentLevel % 10);
 	SPRITES[6]  = 0x00;
 	SPRITES[7]  = 0x88;
-	
-	//Password
-	//TODO assign these based on level probably using an array and loop
-	index = 0xBD; // t
-	index4 = 0xAC; // c
-	index5 = 0xE9; // P
-	
-	SPRITES[8]  = 0x78;
-	SPRITES[9]  = index; 
-	SPRITES[10]  = 0x00;
-	SPRITES[11]  = 0x98;
-	
-	SPRITES[12]  = 0x78;
-	SPRITES[13]  = index4; 
-	SPRITES[14]  = 0x00;
-	SPRITES[15]  = 0xA0;
-	
-	SPRITES[16]  = 0x78;
-	SPRITES[17]  = index5; 
-	SPRITES[18]  = 0x00;
-	SPRITES[19]  = 0xA8;
+
+	index4 = 8;
+	index5 = 0x98;
+	for(index = 3*(currentLevel - 1) ; index4 < 20 ; ++index) {
+		SPRITES[index4]  = 0x78;
+		index4++;
+		SPRITES[index4]  = passwords[index];
+		index4++;
+		SPRITES[index4]  = 0x00;
+		index4++;
+		SPRITES[index4]  = index5;
+		index4++;
+		index5 += 8;
+	}
 }
 
 void init_level1(void) {
@@ -309,11 +367,31 @@ void testForStart(void) {
 	}
 }
 
+void menu_move_logic(void) {
+	if(((joypad1 & RIGHT) != 0) && ((joypad1old & RIGHT) == 0)) {
+		currentMenuOption = (currentMenuOption + 1) % 4;
+	}
+	else if(((joypad1 & LEFT) != 0) && ((joypad1old & LEFT) == 0)) {
+		if(currentMenuOption == 0) {
+			currentMenuOption = 3;
+		}
+		else {
+			currentMenuOption--;
+		}
+	}
+
+	if(((joypad1 & START) != 0) && ((joypad1old & START) == 0)) {
+		if(currentMenuOption == 0) {
+			gameState = 3;
+		}
+	}
+}
+
 void move_logic (void) {
 	if(isButtonPressed(UP)) {
 		buttonBeingHeld = UP;
 		numFramesInMovement = 0;
-		
+
 		//See if we can move up in the direction we're facing
 		X1 = SPRITES[3] + (facingLeft ? -8 : 8);
 		Y1 = SPRITES[0] - 8;
@@ -413,12 +491,12 @@ void move_logic (void) {
 	else if (joypad1 == 0) {
 		buttonBeingHeld = 3; //NOT A VALID BUTTON
 	}
-	
+
 	numFramesInMovement++;
 }
 
 unsigned char isButtonPressed(unsigned char button) {
-	return (((joypad1 & button) != 0) && 
+	return (((joypad1 & button) != 0) &&
 	          ((buttonBeingHeld == button && numFramesInMovement > 10) ||
 			   ((joypad1old & button) == 0)));
 }

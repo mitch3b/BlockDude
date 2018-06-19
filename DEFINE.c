@@ -84,6 +84,25 @@ const unsigned char PALETTE[]={
 0x30, 0x0F, 0x10, 0x30, 0x0F, 0x00, 0x10, 0x30, 0x0F, 0x00, 0x10, 0x30, 0x0F, 0x00, 0x10, 0x30,
 0x30, 0x0F, 0x10, 0x30, 0x0F, 0x00, 0x10, 0x30, 0x0F, 0x00, 0x10, 0x30, 0x0F, 0x00, 0x10, 0x30};
 
+const unsigned char passwords[] = {
+	't', 'c', 'P', //	Level 01
+	'A', 'R', 'o', // Level 02
+	'C', 'K', 's', // Level 03
+	'd', 'a', 'N', // Level 04
+	'B', 'A', 'H', // Level 05
+	'I', 'o', 'n', // Level 06
+	'T', 'w', 'e', // Level 07
+	'n', 'T', 'y', // Level 08
+	'i', 'R', 'C', // Level 09
+	'J', 'm', 'K', // Level 10
+	'w', 'T', 'F'	 // Level 11
+};
+
+const unsigned char menu_option_new[] = {0x28, 3};
+const unsigned char menu_option_password[] = {0x48, 8};
+const unsigned char menu_option_help[] = {0x90, 4};
+const unsigned char menu_option_exit[] = {0xB8, 4};
+
 const unsigned char level_1_blocks_X[] = {0x80, 0xa0};
 const unsigned char level_1_blocks_Y[] = {0x80, 0x80};
 
@@ -129,6 +148,9 @@ void All_Off(void);
 void All_On(void);
 void Reset_Scroll (void);
 void Load_Palette(void);
+void init_title_menu(void);
+void highlight_menu_option(void);
+void menu_move_logic(void);
 void init_test_level(void);
 void init_prelevel_menu(void);
 void init_level1(void);
