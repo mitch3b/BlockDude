@@ -2,7 +2,8 @@
 
 void main (void) {
 	All_Off(); // turn off screen
-	gameState = 1; //0 - title, 1 - load menu, 2 in menu, 3 - load level menu, 4 - wait for start, 5 load level, 6 in level, 7 in restart animation
+	gameState = 1; //0 - title, 1 - load menu, 2 in menu, 3 - load level menu, 4 - wait for start, 5 load level, 6 in level, 
+	               //7 in restart animation, 8 load password screen, 9 password screen
 	currentLevel = 1;
 
 	Load_Palette();
@@ -15,6 +16,12 @@ void main (void) {
 		//every_frame();	// moved this to the nmi code in reset.s for greater stability
 		Get_Input();
 
+		if(gameState == 9) {
+			enter_password_logic();
+		}
+		if(gameState == 8) {
+			init_password_screen();
+		}
 		if(gameState ==7) {
 			restart_animation();
 		}
@@ -251,10 +258,142 @@ void init_prelevel_menu(void) {
 	}
 }
 
+void init_password_screen(void) {
+	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+	PPU_ADDRESS = 0x00;
+	UnRLE(PasswordScreen);	// uncompresses our data
+	
+	hide_sprites();
+	//TODO Reusing these... but feels really sloppy
+	Erase_X = 'A'; //First char
+	Block_Y = 'A';//Second char
+	index5 = 'A';//Third char
+	index6 = 0;  //Used to count how many letters inputted
+	
+	SPRITES[0] = 0x88;
+	SPRITES[1] = Erase_X;
+	SPRITES[2] = 0;
+	SPRITES[3] = 0x78;
+	SPRITES[4] = 0x88;
+	SPRITES[5] = Block_Y;
+	SPRITES[6] = 0;
+	SPRITES[7] = 0x80;
+	SPRITES[8] = 0x88;
+	SPRITES[9] = index5;
+	SPRITES[10] = 0;
+	SPRITES[11] = 0x88;
+	
+	gameState = 9;
+}
+
+void enter_password_logic(void){
+	if(isButtonPressed(A_BUTTON) || isButtonPressed(START) || isButtonPressed(RIGHT)){
+		index6++;	
+	}
+	else if(isButtonPressed(B_BUTTON) || isButtonPressed(LEFT)) {
+		if(index6 > 0) {
+			index6--;
+		}
+	}
+	else if(isButtonPressed(UP)) {
+		buttonBeingHeld = UP;
+		numFramesInMovement = 0;
+		
+		if(index6 == 0) {
+			Erase_X++;
+			if(Erase_X > 'Z' && Erase_X < 'a') {
+				Erase_X = 'a';
+			}
+			else if(Erase_X > 'z') {
+				Erase_X = 'A';
+			}
+		}
+		else if(index6 == 1) {
+			Block_Y++;
+			if(Block_Y > 'Z' && Block_Y < 'a') {
+				Block_Y = 'a';
+			}
+			else if(Block_Y > 'z') {
+				Block_Y = 'A';
+			}
+		}
+		else if(index6 == 2) {
+			index5++;
+			if(index5 > 'Z' && index5 < 'a') {
+				index5 = 'a';
+			}
+			else if(index5 > 'z') {
+				index5 = 'A';
+			}
+		}
+	}
+	else if(isButtonPressed(DOWN)) {
+		buttonBeingHeld = DOWN;
+		numFramesInMovement = 0;
+		
+		if(index6 == 0) {
+			Erase_X--;
+			if(Erase_X > 'Z' && Erase_X < 'a') {
+				Erase_X = 'Z';
+			}
+			else if(Erase_X < 'A') {
+				Erase_X = 'z';
+			}
+		}
+		else if(index6 == 1) {
+			Block_Y--;
+			if(Block_Y > 'Z' && Block_Y < 'a') {
+				Block_Y = 'Z';
+			}
+			else if(Block_Y < 'A') {
+				Block_Y = 'z';
+			}
+		}
+		else if(index6 == 2) {
+			index5--;
+			if(index5 > 'Z' && index5 < 'a') {
+				index5 = 'Z';
+			}
+			else if(index5 < 'A') {
+				index5 = 'z';
+			}
+		}
+	}
+	
+	SPRITES[1] = Erase_X;
+	SPRITES[5] = (index6 > 0) ? Block_Y : 0x01;
+	SPRITES[9] = (index6 > 1) ? index5 : 0x01;;
+	
+	//If all chars inputted, then check if pw matches anything
+	if(index6 == 3) {
+		facingLeft = 0;
+		currentLevel = 1;
+		for(index6 = 0; index6 < sizeof(passwords); ) {
+			facingLeft = 0;
+			facingLeft += (passwords[index6] == Erase_X) ? 1 : 0;
+			index6++;
+			facingLeft += (passwords[index6] == Erase_Y) ? 1 : 0;
+			index6++;
+			facingLeft += (passwords[index6] == index5) ? 1 : 0;
+			index6++;
+			
+			if(facingLeft == 3) {
+				currentLevel = (index6/3);
+			}
+		}
+		
+		gameState = 3;
+	}
+}
+
 void init_level1(void) {
 	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
 	PPU_ADDRESS = 0x00;
 	UnRLE(Level1WithBox);	// uncompresses our data
+	
+	for(index = 0 ; index < sizeof(collisionBin1) ; index++) {
+		collisionBin[index] = collisionBin1[index];
+	}
 
 	X1 = 0xB0;//TODO this isnt right
 	Y1 = 0x70;
@@ -469,6 +608,9 @@ void menu_move_logic(void) {
 	if(((joypad1 & START) != 0) && ((joypad1old & START) == 0)) {
 		if(currentMenuOption == 0) {
 			gameState = 3;
+		}
+		else if (currentMenuOption == 1) {
+			gameState = 8;
 		}
 	}
 }
