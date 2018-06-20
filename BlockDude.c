@@ -2,7 +2,7 @@
 
 void main (void) {
 	All_Off(); // turn off screen
-	gameState = 1; //0 - title, 1 - load menu, 2 in menu, 3 - load level menu, 4 - wait for start, 5 load level, 6 in level, 
+	gameState = 1; //0 - title, 1 - load menu, 2 in menu, 3 - load level menu, 4 - wait for start, 5 load level, 6 in level,
 	               //7 in restart animation, 8 load password screen, 9 password screen
 	currentLevel = 1;
 
@@ -20,7 +20,13 @@ void main (void) {
 			enter_password_logic();
 		}
 		if(gameState == 8) {
+			All_Off();
+
 			init_password_screen();
+
+			Wait_Vblank();
+			All_On();
+			Reset_Scroll();
 		}
 		if(gameState ==7) {
 			restart_animation();
@@ -277,14 +283,14 @@ void init_password_screen(void) {
 	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
 	PPU_ADDRESS = 0x00;
 	UnRLE(PasswordScreen);	// uncompresses our data
-	
+
 	hide_sprites();
 
-	pwInput[0] = 'A'; 
+	pwInput[0] = 'A';
 	pwInput[1] = 'A';
 	pwInput[2] = 'A';
 	index6 = 0;  //Used to count how many letters inputted
-	
+
 	SPRITES[0] = 0x88;
 	SPRITES[1] = pwInput[0];
 	SPRITES[2] = 0;
@@ -297,13 +303,13 @@ void init_password_screen(void) {
 	SPRITES[9] = pwInput[2];
 	SPRITES[10] = 0;
 	SPRITES[11] = 0x88;
-	
+
 	gameState = 9;
 }
 
 void enter_password_logic(void){
 	if(isButtonPressed(A_BUTTON) || isButtonPressed(START) || isButtonPressed(RIGHT)){
-		index6++;	
+		index6++;
 	}
 	else if(isButtonPressed(B_BUTTON) || isButtonPressed(LEFT)) {
 		if(index6 > 0) {
@@ -313,7 +319,7 @@ void enter_password_logic(void){
 	else if(isButtonPressed(UP)) {
 		buttonBeingHeld = UP;
 		numFramesInMovement = 0;
-		
+
 		pwInput[index6]++;
 		if(pwInput[index6] > 'Z' && pwInput[index6] < 'a') {
 			pwInput[index6] = 'a';
@@ -325,7 +331,7 @@ void enter_password_logic(void){
 	else if(isButtonPressed(DOWN)) {
 		buttonBeingHeld = DOWN;
 		numFramesInMovement = 0;
-		
+
 		pwInput[index6]--;
 		if(pwInput[index6] > 'Z' && pwInput[index6] < 'a') {
 			pwInput[index6] = 'Z';
@@ -334,11 +340,11 @@ void enter_password_logic(void){
 			pwInput[index6] = 'z';
 		}
 	}
-	
+
 	SPRITES[1] = pwInput[0];
 	SPRITES[5] = (index6 > 0) ? pwInput[1] : 0x01;
 	SPRITES[9] = (index6 > 1) ? pwInput[2] : 0x01;;
-	
+
 	//If all chars inputted, then check if pw matches anything
 	if(index6 == 3) {
 		facingLeft = 0;
@@ -351,12 +357,12 @@ void enter_password_logic(void){
 			index6++;
 			facingLeft += (passwords[index6] == pwInput[2]) ? 1 : 0;
 			index6++;
-			
+
 			if(facingLeft == 3) {
 				currentLevel = (index6/3);
 			}
 		}
-		
+
 		gameState = 3;
 	}
 }
@@ -365,7 +371,7 @@ void init_level1(void) {
 	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
 	PPU_ADDRESS = 0x00;
 	UnRLE(Level1WithBox);	// uncompresses our data
-	
+
 	for(index = 0 ; index < sizeof(collisionBin1) ; index++) {
 		collisionBin[index] = collisionBin1[index];
 	}
@@ -492,8 +498,8 @@ void init_level6(void) {
 		collisionBin[index] = collisionBin6[index];
 	}
 
-	X1 = 0x90; 
-	Y1 = 0x70; 
+	X1 = 0x90;
+	Y1 = 0x70;
 	doorX = 0x30;
 	doorY = 0x50;
 
@@ -517,7 +523,7 @@ void init_level7(void) {
 	}
 
 	X1 = 0xA8;
-	Y1 = 0x80; 
+	Y1 = 0x80;
 	doorX = 0x28;
 	doorY = 0x70;
 
@@ -540,8 +546,8 @@ void init_level8(void) {
 		collisionBin[index] = collisionBin8[index];
 	}
 
-	X1 = 0xB8; 
-	Y1 = 0xA8; 
+	X1 = 0xB8;
+	Y1 = 0xA8;
 	doorX = 0xD8;
 	doorY = 0x58;
 
@@ -565,7 +571,7 @@ void init_level9(void) {
 	}
 
 	X1 = 0xA0;
-	Y1 = 0x68; 
+	Y1 = 0x68;
 	doorX = 0x38;
 	doorY = 0x78;
 
@@ -588,8 +594,8 @@ void init_level10(void) {
 		collisionBin[index] = collisionBin10[index];
 	}
 
-	X1 = 0x80; 
-	Y1 = 0x80; 
+	X1 = 0x80;
+	Y1 = 0x80;
 	doorX = 0x18;
 	doorY = 0x58;
 
@@ -695,11 +701,11 @@ void restart_animation (void) {
 	else {
 		SPRITES[0] -= velocityY/5;
 		velocityY -= 1;
-		
+
 		if(velocityY < 0) {
 			SPRITES[2] = 0x80;
 		}
-		
+
 		if(velocityY < -50) {
 			velocityY = -50;
 		}
@@ -712,7 +718,7 @@ void move_logic (void) {
 		velocityY = 10;
 		gameState = 7;
 	}
-	
+
 	if(isButtonPressed(UP)) {
 		buttonBeingHeld = UP;
 		numFramesInMovement = 0;
@@ -750,7 +756,7 @@ void move_logic (void) {
 			Y1 = SPRITES[0];
 		}
 	}
-	else if(isButtonPressed(DOWN)) {
+	else if(isButtonPressed(B_BUTTON)) {
 		if(isHoldingBlock == 0) {
 
 			//Check above player is empty
