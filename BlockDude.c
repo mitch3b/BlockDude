@@ -2,7 +2,7 @@
 
 void main (void) {
 	All_Off(); // turn off screen
-	gameState = 1; //0 - title, 1 - load menu, 2 in menu, 3 - load level menu, 4 - wait for start, 5 load level, 6 in level
+	gameState = 1; //0 - title, 1 - load menu, 2 in menu, 3 - load level menu, 4 - wait for start, 5 load level, 6 in level, 7 in restart animation
 	currentLevel = 1;
 
 	Load_Palette();
@@ -15,7 +15,10 @@ void main (void) {
 		//every_frame();	// moved this to the nmi code in reset.s for greater stability
 		Get_Input();
 
-		if(gameState == 6) {
+		if(gameState ==7) {
+			restart_animation();
+		}
+		else if(gameState == 6) {
 			move_logic();
 			update_sprites();
 			check_endlevel();
@@ -224,12 +227,12 @@ void init_prelevel_menu(void) {
 
 	//Level
 	SPRITES[0]  = 0x68;
-	SPRITES[1]  = (currentLevel > 9) ? (0xD0 + (currentLevel / 10)) : 0x01; //Only show leading digit if it exists
+	SPRITES[1]  = (currentLevel > 9) ? (0x30 + (currentLevel / 10)) : 0x01; //Only show leading digit if it exists
 	SPRITES[2]  = 0x00;
 	SPRITES[3]  = 0x80;
 
 	SPRITES[4]  = 0x68;
-	SPRITES[5]  = 0xD0 + (currentLevel % 10);
+	SPRITES[5]  = 0x30 + (currentLevel % 10);
 	SPRITES[6]  = 0x00;
 	SPRITES[7]  = 0x88;
 
@@ -470,7 +473,33 @@ void menu_move_logic(void) {
 	}
 }
 
+void restart_animation (void) {
+	if(SPRITES[0] < 10) {
+		//Animation complete
+		gameState = 5;
+		SPRITES[2] = 0; //Reset character to rightside up... not sure if we need this but safe
+	}
+	else {
+		SPRITES[0] -= velocityY/5;
+		velocityY -= 1;
+		
+		if(velocityY < 0) {
+			SPRITES[2] = 0x80;
+		}
+		
+		if(velocityY < -50) {
+			velocityY = -50;
+		}
+	}
+}
+
 void move_logic (void) {
+	if(isButtonPressed(SELECT)) {
+		//Reset on select
+		velocityY = 10;
+		gameState = 7;
+	}
+	
 	if(isButtonPressed(UP)) {
 		buttonBeingHeld = UP;
 		numFramesInMovement = 0;

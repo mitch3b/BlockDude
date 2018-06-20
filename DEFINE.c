@@ -28,6 +28,7 @@ unsigned char index;
 unsigned char index4;
 unsigned char index5;
 signed char index6;
+signed char velocityY;
 unsigned char returnValue;
 unsigned char numFramesInMovement;
 unsigned char buttonBeingHeld;
@@ -186,6 +187,7 @@ void getCollisionIndices(int x, int y);
 void add_to_collision_map(int x, int y);
 void remove_from_background(int x, int y);
 void add_block_to_background(int x, int y);
+void restart_animation (void);
 unsigned char isButtonPressed(unsigned char button);
 
 void init_level(void);
