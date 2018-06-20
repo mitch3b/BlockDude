@@ -53,6 +53,21 @@ void main (void) {
 				case 6:
 					init_level6();
 					break;
+				case 7:
+					init_level7();
+					break;
+				case 8:
+					init_level8();
+					break;
+				case 9:
+					init_level9();
+					break;
+				case 10:
+					init_level10();
+					break;
+				case 11:
+					init_level11();
+					break;
 				default:
 					init_level1();
 			}
@@ -489,6 +504,102 @@ void init_level6(void) {
 	for(index5 = 0; index5 < numBlocks; ++index5) {
 		blocks_X[index5] = level_6_blocks_X[index5];
 		blocks_Y[index5] = level_6_blocks_Y[index5];
+	}
+}
+
+void init_level7(void) {
+	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+	PPU_ADDRESS = 0x00;
+	UnRLE(Level7);	// uncompresses our data
+
+	for(index = 0 ; index < sizeof(collisionBin7) ; index++) {
+		collisionBin[index] = collisionBin7[index];
+	}
+
+	X1 = 0xA8;
+	Y1 = 0x80; 
+	doorX = 0x28;
+	doorY = 0x70;
+
+	init_level();
+	numBlocks = sizeof(level_7_blocks_X);
+
+	index6 = 4;
+	for(index5 = 0; index5 < numBlocks; ++index5) {
+		blocks_X[index5] = level_7_blocks_X[index5];
+		blocks_Y[index5] = level_7_blocks_Y[index5];
+	}
+}
+
+void init_level8(void) {
+	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+	PPU_ADDRESS = 0x00;
+	UnRLE(Level8);	// uncompresses our data
+
+	for(index = 0 ; index < sizeof(collisionBin8) ; index++) {
+		collisionBin[index] = collisionBin8[index];
+	}
+
+	X1 = 0xB8; 
+	Y1 = 0xA8; 
+	doorX = 0xD8;
+	doorY = 0x58;
+
+	init_level();
+	numBlocks = sizeof(level_8_blocks_X);
+
+	index6 = 4;
+	for(index5 = 0; index5 < numBlocks; ++index5) {
+		blocks_X[index5] = level_8_blocks_X[index5];
+		blocks_Y[index5] = level_8_blocks_Y[index5];
+	}
+}
+
+void init_level9(void) {
+	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+	PPU_ADDRESS = 0x00;
+	UnRLE(Level9);	// uncompresses our data
+
+	for(index = 0 ; index < sizeof(collisionBin9) ; index++) {
+		collisionBin[index] = collisionBin9[index];
+	}
+
+	X1 = 0xA0;
+	Y1 = 0x68; 
+	doorX = 0x38;
+	doorY = 0x78;
+
+	init_level();
+	numBlocks = sizeof(level_9_blocks_X);
+
+	index6 = 4;
+	for(index5 = 0; index5 < numBlocks; ++index5) {
+		blocks_X[index5] = level_9_blocks_X[index5];
+		blocks_Y[index5] = level_9_blocks_Y[index5];
+	}
+}
+
+void init_level10(void) {
+	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+	PPU_ADDRESS = 0x00;
+	UnRLE(Level10);	// uncompresses our data
+
+	for(index = 0 ; index < sizeof(collisionBin10) ; index++) {
+		collisionBin[index] = collisionBin10[index];
+	}
+
+	X1 = 0x80; 
+	Y1 = 0x80; 
+	doorX = 0x18;
+	doorY = 0x58;
+
+	init_level();
+	numBlocks = sizeof(level_10_blocks_X);
+
+	index6 = 4;
+	for(index5 = 0; index5 < numBlocks; ++index5) {
+		blocks_X[index5] = level_10_blocks_X[index5];
+		blocks_Y[index5] = level_10_blocks_Y[index5];
 	}
 }
 
