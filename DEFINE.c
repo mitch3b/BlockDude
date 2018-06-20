@@ -39,6 +39,8 @@ unsigned char doorY;
 unsigned char X1;
 unsigned char Y1;
 unsigned char isHoldingBlock;
+//TODO these store the password, but could reuse like any other var
+unsigned char pwInput[] = {'A','A','A'};
 unsigned char holdingBlock;
 unsigned char facingLeft;
 unsigned char currentLevel;

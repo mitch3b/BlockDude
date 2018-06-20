@@ -264,22 +264,22 @@ void init_password_screen(void) {
 	UnRLE(PasswordScreen);	// uncompresses our data
 	
 	hide_sprites();
-	//TODO Reusing these... but feels really sloppy
-	Erase_X = 'A'; //First char
-	Block_Y = 'A';//Second char
-	index5 = 'A';//Third char
+
+	pwInput[0] = 'A'; 
+	pwInput[1] = 'A';
+	pwInput[2] = 'A';
 	index6 = 0;  //Used to count how many letters inputted
 	
 	SPRITES[0] = 0x88;
-	SPRITES[1] = Erase_X;
+	SPRITES[1] = pwInput[0];
 	SPRITES[2] = 0;
 	SPRITES[3] = 0x78;
 	SPRITES[4] = 0x88;
-	SPRITES[5] = Block_Y;
+	SPRITES[5] = pwInput[1];
 	SPRITES[6] = 0;
 	SPRITES[7] = 0x80;
 	SPRITES[8] = 0x88;
-	SPRITES[9] = index5;
+	SPRITES[9] = pwInput[2];
 	SPRITES[10] = 0;
 	SPRITES[11] = 0x88;
 	
@@ -299,70 +299,30 @@ void enter_password_logic(void){
 		buttonBeingHeld = UP;
 		numFramesInMovement = 0;
 		
-		if(index6 == 0) {
-			Erase_X++;
-			if(Erase_X > 'Z' && Erase_X < 'a') {
-				Erase_X = 'a';
-			}
-			else if(Erase_X > 'z') {
-				Erase_X = 'A';
-			}
+		pwInput[index6]++;
+		if(pwInput[index6] > 'Z' && pwInput[index6] < 'a') {
+			pwInput[index6] = 'a';
 		}
-		else if(index6 == 1) {
-			Block_Y++;
-			if(Block_Y > 'Z' && Block_Y < 'a') {
-				Block_Y = 'a';
-			}
-			else if(Block_Y > 'z') {
-				Block_Y = 'A';
-			}
-		}
-		else if(index6 == 2) {
-			index5++;
-			if(index5 > 'Z' && index5 < 'a') {
-				index5 = 'a';
-			}
-			else if(index5 > 'z') {
-				index5 = 'A';
-			}
+		else if(pwInput[index6] > 'z') {
+			pwInput[index6] = 'A';
 		}
 	}
 	else if(isButtonPressed(DOWN)) {
 		buttonBeingHeld = DOWN;
 		numFramesInMovement = 0;
 		
-		if(index6 == 0) {
-			Erase_X--;
-			if(Erase_X > 'Z' && Erase_X < 'a') {
-				Erase_X = 'Z';
-			}
-			else if(Erase_X < 'A') {
-				Erase_X = 'z';
-			}
+		pwInput[index6]--;
+		if(pwInput[index6] > 'Z' && pwInput[index6] < 'a') {
+			pwInput[index6] = 'Z';
 		}
-		else if(index6 == 1) {
-			Block_Y--;
-			if(Block_Y > 'Z' && Block_Y < 'a') {
-				Block_Y = 'Z';
-			}
-			else if(Block_Y < 'A') {
-				Block_Y = 'z';
-			}
-		}
-		else if(index6 == 2) {
-			index5--;
-			if(index5 > 'Z' && index5 < 'a') {
-				index5 = 'Z';
-			}
-			else if(index5 < 'A') {
-				index5 = 'z';
-			}
+		else if(pwInput[index6] < 'A') {
+			pwInput[index6] = 'z';
 		}
 	}
 	
-	SPRITES[1] = Erase_X;
-	SPRITES[5] = (index6 > 0) ? Block_Y : 0x01;
-	SPRITES[9] = (index6 > 1) ? index5 : 0x01;;
+	SPRITES[1] = pwInput[0];
+	SPRITES[5] = (index6 > 0) ? pwInput[1] : 0x01;
+	SPRITES[9] = (index6 > 1) ? pwInput[2] : 0x01;;
 	
 	//If all chars inputted, then check if pw matches anything
 	if(index6 == 3) {
@@ -370,11 +330,11 @@ void enter_password_logic(void){
 		currentLevel = 1;
 		for(index6 = 0; index6 < sizeof(passwords); ) {
 			facingLeft = 0;
-			facingLeft += (passwords[index6] == Erase_X) ? 1 : 0;
+			facingLeft += (passwords[index6] == pwInput[0]) ? 1 : 0;
 			index6++;
-			facingLeft += (passwords[index6] == Erase_Y) ? 1 : 0;
+			facingLeft += (passwords[index6] == pwInput[1]) ? 1 : 0;
 			index6++;
-			facingLeft += (passwords[index6] == index5) ? 1 : 0;
+			facingLeft += (passwords[index6] == pwInput[2]) ? 1 : 0;
 			index6++;
 			
 			if(facingLeft == 3) {
