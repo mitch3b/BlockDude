@@ -1,4 +1,4 @@
-level = "10"
+level = "8"
 with open("BG/Level" + level + "Collision.h") as f:
 	output = "const unsigned char collisionBin" + level + "[] = {";
 	for line in f:

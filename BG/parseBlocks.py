@@ -1,4 +1,4 @@
-level = "10"
+level = "8"
 with open("BG/Level" + level + "Collision.h") as f:
 	lineCount = 0
 	outputX = "const unsigned char level_" + level + "_blocks_X[] = {"
