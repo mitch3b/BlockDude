@@ -3,7 +3,8 @@
 void main (void) {
 	All_Off(); // turn off screen
 	gameState = 1; //0 - title, 1 - load menu, 2 in menu, 3 - load level menu, 4 - wait for start, 5 load level, 6 in level,
-	               //7 in restart animation, 8 load password screen, 9 password screen
+	               //7 in restart animation, 8 load password screen, 9 password screen, 10 load help screen, 11 - help screen
+								 //12 - game over screen, 13 - stuck in game over
 	currentLevel = 1;
 
 	Load_Palette();
@@ -16,10 +17,37 @@ void main (void) {
 		//every_frame();	// moved this to the nmi code in reset.s for greater stability
 		Get_Input();
 
-		if(gameState == 9) {
+		if(gameState == 14) {
+			//Do nothing, game over screen or game complete screen is up.
+		}
+		else if(gameState == 13) {
+			//Do nothing, game over screen or game complete screen is up.
+		}
+		else if(gameState == 12) {
+			All_Off();
+
+			init_game_over_screen();
+
+			Wait_Vblank();
+			All_On();
+			Reset_Scroll();
+		}
+		else if(gameState == 11) {
+			help_screen_logic();
+		}
+		else if(gameState == 10) {
+			All_Off();
+
+			init_help_screen();
+
+			Wait_Vblank();
+			All_On();
+			Reset_Scroll();
+		}
+		else if(gameState == 9) {
 			enter_password_logic();
 		}
-		if(gameState == 8) {
+		else if(gameState == 8) {
 			All_Off();
 
 			init_password_screen();
@@ -28,7 +56,7 @@ void main (void) {
 			All_On();
 			Reset_Scroll();
 		}
-		if(gameState ==7) {
+		else if(gameState ==7) {
 			restart_animation();
 		}
 		else if(gameState == 6) {
@@ -39,6 +67,8 @@ void main (void) {
 		else if (gameState == 5) { //Load level
 			hide_sprites();
 			All_Off();
+
+			gameState = 6; //By default go to in level state
 
 			switch(currentLevel) {
 				case 1:
@@ -74,6 +104,10 @@ void main (void) {
 				case 11:
 					init_level11();
 					break;
+				case 12:
+					gameState = 14;
+					init_game_complete_screen();
+					break;
 				default:
 					init_level1();
 			}
@@ -81,8 +115,6 @@ void main (void) {
 			Wait_Vblank();
 			All_On();
 			Reset_Scroll();
-
-			gameState = 6;
 		}
 		else if (gameState == 3) { //Pre level menu
 			hide_sprites();
@@ -276,6 +308,31 @@ void init_prelevel_menu(void) {
 		SPRITES[index4]  = index5;
 		index4++;
 		index5 += 8;
+	}
+}
+
+void init_game_over_screen(void) {
+		PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+		PPU_ADDRESS = 0x00;
+		UnRLE(GameOverScreen);	// uncompresses our data
+
+		hide_sprites();
+		gameState = 13;
+}
+
+void init_help_screen(void) {
+		PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+		PPU_ADDRESS = 0x00;
+		UnRLE(HelpScreen);	// uncompresses our data
+
+		hide_sprites();
+		gameState = 11;
+}
+
+void help_screen_logic(void) {
+	//on any button go back to menu
+	if(joypad1 != 0 && joypad1old == 0) {
+		gameState = 1;
 	}
 }
 
@@ -634,6 +691,18 @@ void init_level11(void) {
 	}
 }
 
+void init_game_complete_screen(void) {
+	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+	PPU_ADDRESS = 0x00;
+	UnRLE(GameOverScreen);	// uncompresses our data
+
+	X1 = 0;
+	Y1 = 0;
+
+	init_level();
+	hide_sprites();
+}
+
 
 void add_to_collision_map(int x, int y) {
 	getCollisionIndices(x, y);
@@ -688,6 +757,12 @@ void menu_move_logic(void) {
 		}
 		else if (currentMenuOption == 1) {
 			gameState = 8;
+		}
+		else if (currentMenuOption == 2) {
+			gameState = 10;
+		}
+		else if(currentMenuOption == 3) {
+			gameState = 12;
 		}
 	}
 }
@@ -888,7 +963,12 @@ void check_endlevel(void) {
 	if(SPRITES[0] == doorY && SPRITES[3] == doorX) {
 		//Level complete
 		currentLevel++;
-		gameState = 3;
+		if(currentLevel < 12) {
+			gameState = 3;
+		}
+		else {
+			gameState = 5;
+		}
 	}
 }
 
