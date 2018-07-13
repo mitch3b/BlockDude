@@ -146,7 +146,7 @@ void main (void) {
 			highlight_menu_option();
 		}
 		//TODO remove ... just for debugging
-		draw_location();
+		//draw_location();
 
 		NMI_flag = 0;
 	}
