@@ -31,6 +31,7 @@ signed char index6;
 signed char velocityY;
 unsigned char returnValue;
 unsigned char numFramesInMovement;
+unsigned char numFramesToMove;
 unsigned char buttonBeingHeld;
 unsigned char blockCollision;
 unsigned char numBlocks;

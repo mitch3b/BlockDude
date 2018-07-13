@@ -196,6 +196,8 @@ void init_level(void) {
 
 	SPRITES[1] = 0x10;
 	SPRITES[2] = facingLeft;
+
+	numFramesToMove = 10; //When holding a button
 }
 
 void init_test_level(void) {
@@ -343,6 +345,8 @@ void init_password_screen(void) {
 
 	hide_sprites();
 
+	numFramesToMove = 5;
+
 	pwInput[0] = 'A';
 	pwInput[1] = 'A';
 	pwInput[2] = 'A';
@@ -397,6 +401,8 @@ void enter_password_logic(void){
 			pwInput[index6] = 'z';
 		}
 	}
+
+	numFramesInMovement++;
 
 	SPRITES[1] = pwInput[0];
 	SPRITES[5] = (index6 > 0) ? pwInput[1] : 0x01;
@@ -903,7 +909,7 @@ void move_logic (void) {
 
 unsigned char isButtonPressed(unsigned char button) {
 	return (((joypad1 & button) != 0) &&
-	          ((buttonBeingHeld == button && numFramesInMovement > 10) ||
+	          ((buttonBeingHeld == button && numFramesInMovement > numFramesToMove) ||
 			   ((joypad1old & button) == 0)));
 }
 
@@ -974,40 +980,40 @@ void check_endlevel(void) {
 
 //For debugging
 void draw_location(void) {
-	//sprites 57-63
+	//sprites 228-243
 	//Get index into collisionBin
 	index = numFramesInMovement;
 
 	//Find the bit for that collisionBin Index
-	index4 = SPRITES[0];
+	index4 = buttonBeingHeld;
 	//x 100's
 	SPRITES[228] = 0x10;
-	SPRITES[229] = 0xD0 + ((index / 100) % 10);
+	SPRITES[229] = 0x30 + ((index / 100) % 10);
 	SPRITES[230] = 0;
 	SPRITES[231] = 0x10;
 	//x 10's
 	SPRITES[244] = 0x10;
-	SPRITES[245] = 0xD0 + ((index / 10) % 10);
+	SPRITES[245] = 0x30 + ((index / 10) % 10);
 	SPRITES[246] = 0;
 	SPRITES[247] = 0x18;
 	//x 1's
 	SPRITES[248] = 0x10;
-	SPRITES[249] = 0xD0 + (index % 10);
+	SPRITES[249] = 0x30 + (index % 10);
 	SPRITES[250] = 0;
 	SPRITES[251] = 0x20;
 	//y 100's
 	SPRITES[232] = 0x10;
-	SPRITES[233] = 0xD0 + ((index4 / 100) % 10);
+	SPRITES[233] = 0x30 + ((index4 / 100) % 10);
 	SPRITES[234] = 0;
 	SPRITES[235] = 0x30;
 	//x 10's
 	SPRITES[236] = 0x10;
-	SPRITES[237] = 0xD0 + ((index4 / 10) % 10);
+	SPRITES[237] = 0x30 + ((index4 / 10) % 10);
 	SPRITES[238] = 0;
 	SPRITES[239] = 0x38;
 	//x 1's
 	SPRITES[240] = 0x10;
-	SPRITES[241] = 0xD0 + (index4 % 10);
+	SPRITES[241] = 0x30 + (index4 % 10);
 	SPRITES[242] = 0;
 	SPRITES[243] = 0x40;
 }
