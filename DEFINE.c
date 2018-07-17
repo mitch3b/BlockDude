@@ -78,6 +78,7 @@ unsigned char SPRITES[256]; //64 sprites * 4 bytes
 #include "BG/HelpScreen.h"
 #include "BG/PasswordScreen.h"
 #include "BG/GameOverScreen.h"
+#include "BG/GameCompleteScreen.h"
 #include "BG/LevelMenu.h"
 #include "BG/Level1.h"
 #include "BG/Level2.h"

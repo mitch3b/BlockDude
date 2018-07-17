@@ -700,7 +700,7 @@ void init_level11(void) {
 void init_game_complete_screen(void) {
 	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
 	PPU_ADDRESS = 0x00;
-	UnRLE(GameOverScreen);	// uncompresses our data
+	UnRLE(GameCompleteScreen);	// uncompresses our data
 
 	X1 = 0;
 	Y1 = 0;
