@@ -1,7 +1,7 @@
 ; Startup code for cc65/ca65
 
 	.import _main
-	.export __STARTUP__:absolute=1
+	.export __STARTUP__:absolute=1, _hide_sprites
 	.importzp _NMI_flag, _Frame_Count
 	.importzp _Horiz_scroll, _Nametable, _Erase_X, _Erase_Y, _Block_X, _Block_Y
 
@@ -63,7 +63,7 @@ Blankram:
 	bpl :-
 
 Isprites:
-	jsr Blanksprite
+	jsr hide_sprites
 	jsr ClearNT
 
 MusicInit:			;turns music channels off
@@ -81,23 +81,20 @@ MusicInit:			;turns music channels off
 	lda $2002		;reset the 'latch'
 	jmp _main		;jumps to main in c code
 
-
-_Blanksprite:
-Blanksprite:
-	ldy #$40
-	ldx #$00
-	lda #$f8
-Blanksprite2:		;puts all sprites off screen
-	sta $0200, x
-	inx
-	inx
-	inx
-	inx
-	dey
-	bne Blanksprite2
-	rts
-
-
+_hide_sprites:
+	hide_sprites:
+		ldy #$40
+		ldx #$00
+		lda #$f8
+	hide_sprites2:		;puts all sprites off screen
+		sta $0200, x
+		inx
+		inx
+		inx
+		inx
+		dey
+		bne hide_sprites2
+		rts
 
 _ClearNT:
 ClearNT:

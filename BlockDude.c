@@ -65,7 +65,6 @@ void main (void) {
 			check_endlevel();
 		}
 		else if (gameState == 5) { //Load level
-			hide_sprites();
 			All_Off();
 
 			gameState = 6; //By default go to in level state
@@ -181,6 +180,8 @@ void Load_Palette (void) {
 }
 
 void init_level(void) {
+	hide_sprites();
+
 	SPRITES[4] = 0;
 	SPRITES[5] = 0x03;
 	SPRITES[6] = 0;
@@ -953,15 +954,6 @@ void update_sprites (void) {
 	if(isHoldingBlock != 0) {
 		SPRITES[4] = SPRITES[0] - 8;
 		SPRITES[7] = SPRITES[3];
-	}
-}
-
-
-void hide_sprites (void) {
-	//TODO don't love this but good enough for now
-	for (index = 0 ; index < 64 ; index++) {
-		SPRITES[4*index] = 0; //set x to offscreen
-		SPRITES[4*index + 3] = 0; //set y to offsreen
 	}
 }
 

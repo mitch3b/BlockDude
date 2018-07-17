@@ -207,7 +207,6 @@ void init_level9(void);
 void init_level10(void);
 void init_level11(void);
 void init_game_complete_screen(void);
-void hide_sprites (void);
 void testForStart(void);
 void move_logic (void);
 void update_sprites (void);
@@ -219,6 +218,7 @@ void remove_from_background(int x, int y);
 void add_block_to_background(int x, int y);
 void restart_animation (void);
 unsigned char isButtonPressed(unsigned char button);
+void hide_sprites(void);
 
 void init_level(void);
 
