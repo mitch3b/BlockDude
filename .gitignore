@@ -5,6 +5,6 @@
 *.s
 !asm4c.s
 !reset.s
-
+!release/*.nes
 # Other
 .DS_Store
