@@ -167,7 +167,7 @@ void Reset_Scroll (void) {
 	PPU_ADDRESS = 0;
 	PPU_ADDRESS = 0;
 	SCROLL = 0;
-	SCROLL = 0;
+	SCROLL = 0xff;
 }
 
 void Load_Palette (void) {
