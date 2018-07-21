@@ -3,3 +3,7 @@ All info about different versions, known bugs, etc.
 0.01:
   No comparison in terms of speed to real app
   Small glitch on the first frame of a new screen where the old sprites are loaded and the background is shifted too high.
+0.02:
+  Fixed the scroll glitch. Still need to verify speeds
+ 
+
