@@ -6,4 +6,7 @@ All info about different versions, known bugs, etc.
 0.02:
   Fixed the scroll glitch. Still need to verify speeds
  
+0.03:
+  Fixed some sprites slightly visibile in the top left
+  Fixed Game Complete screen which had an extra random 'B' on it
 
