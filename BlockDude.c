@@ -182,7 +182,7 @@ void Load_Palette (void) {
 void init_level(void) {
 	hide_sprites();
 
-	SPRITES[4] = 0;
+	SPRITES[4] = 0xf8;
 	SPRITES[5] = 0x03;
 	SPRITES[6] = 0;
 	SPRITES[7] = 0;
@@ -883,7 +883,7 @@ void move_logic (void) {
 
 				add_to_collision_map(blocks_X[holdingBlock], blocks_Y[holdingBlock]);
 				add_block_to_background(blocks_X[holdingBlock], blocks_Y[holdingBlock]);
-				SPRITES[4] = 0;
+				SPRITES[4] = 0xf8;
 				SPRITES[7] = 0;
 				isHoldingBlock = 0;
 			}
