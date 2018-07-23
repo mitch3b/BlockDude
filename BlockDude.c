@@ -9,6 +9,10 @@ void main (void) {
 
 	Load_Palette();
 	Reset_Scroll();
+
+	Reset_Music(); // note, this is famitone init, and I added the music data address. see famitone2.s
+	Play_Music(song); // song = 0
+
 	Wait_Vblank();
 	All_On(); // turn on screen
 	while (1){ // infinite loop
@@ -144,6 +148,8 @@ void main (void) {
 			menu_move_logic();
 			highlight_menu_option();
 		}
+
+		Music_Update();
 		//TODO remove ... just for debugging
 		//draw_location();
 

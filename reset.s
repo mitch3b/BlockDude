@@ -11,11 +11,23 @@
     .include "zeropage.inc"
 	.import initlib, copydata
 
+FT_BASE_ADR		=$0700	;page in RAM, should be $xx00
 
+.define FT_THREAD       1	;undefine if you call sound effects in the same thread as sound update
+.define FT_PAL_SUPPORT	1   ;undefine to exclude PAL support
+.define FT_NTSC_SUPPORT	1   ;undefine to exclude NTSC support
+
+FT_DPCM_OFF				= $c000		;$c000..$ffc0, 64-byte steps
+FT_SFX_STREAMS			= 1			;number of sound effects played at once, 1..4
+
+.define FT_DPCM_ENABLE  0			;undefine to exclude all DMC code
+.define FT_SFX_ENABLE   0			;undefine to exclude all sound effects code
 
 .segment "ZEROPAGE"
 
-
+NTSC_MODE: 			.res 1
+FT_TEMP: 			.res 3
+TEMP: 				.res 11
 
 
 .segment "HEADER"
@@ -166,6 +178,12 @@ irq:
     rti
 
 .segment "RODATA"
+	.include "Music/famitone2.s"
+
+music_data:
+	.include "Music/TestMusic.s"
+
+sounds_data:
 
 ;none yet
 
