@@ -6,6 +6,7 @@ void main (void) {
 	               //7 in restart animation, 8 load password screen, 9 password screen, 10 load help screen, 11 - help screen
 								 //12 - game over screen, 13 - stuck in game over
 	currentLevel = 1;
+	song = 0;
 
 	Load_Palette();
 	Reset_Scroll();
@@ -70,6 +71,11 @@ void main (void) {
 		}
 		else if (gameState == 5) { //Load level
 			All_Off();
+			
+			Reset_Music();
+			++song;
+			song &= 1;
+			Play_Music(song);
 
 			gameState = 6; //By default go to in level state
 
@@ -122,6 +128,11 @@ void main (void) {
 		else if (gameState == 3) { //Pre level menu
 			hide_sprites();
 			All_Off();
+			
+			Reset_Music();
+			++song;
+			song &= 1;
+			Play_Music(song);
 
 			init_prelevel_menu();
 
