@@ -71,7 +71,7 @@ void main (void) {
 		}
 		else if (gameState == 5) { //Load level
 			All_Off();
-			
+
 			Reset_Music();
 			++song;
 			song &= 1;
@@ -128,7 +128,7 @@ void main (void) {
 		else if (gameState == 3) { //Pre level menu
 			hide_sprites();
 			All_Off();
-			
+
 			Reset_Music();
 			++song;
 			song &= 1;

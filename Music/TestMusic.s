@@ -25,7 +25,7 @@ TestMusic_music_data:
 
 
 @song0ch0:
-	.byte $fb,$06
+	.byte $fb,$07
 @song0ch0loop:
 @ref0:
 	.byte $80,$1a,$9d,$00,$85,$1a,$85,$1f,$29,$00,$85,$1a,$9d,$00,$85,$1a
