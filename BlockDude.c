@@ -73,8 +73,7 @@ void main (void) {
 			All_Off();
 
 			Reset_Music();
-			++song;
-			song &= 1;
+			song = 2;
 			Play_Music(song);
 
 			gameState = 6; //By default go to in level state
@@ -130,8 +129,7 @@ void main (void) {
 			All_Off();
 
 			Reset_Music();
-			++song;
-			song &= 1;
+			song = 1;
 			Play_Music(song);
 
 			init_prelevel_menu();
