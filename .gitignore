@@ -8,5 +8,6 @@
 !release/*.nes
 !Music/famitone2.s
 !Music/TestMusic.s
+!Music/custom/BlockDude.s
 # Other
 .DS_Store
