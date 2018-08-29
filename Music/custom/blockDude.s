@@ -17,15 +17,36 @@ blockDude_music_data:
 	.byte $30 ;instrument $00
 	.word @env1,@env0,@env0
 	.byte $00
+	.byte $30 ;instrument $01
+	.word @env2,@env0,@env0
+	.byte $00
 	.byte $30 ;instrument $02
-	.word @env0,@env0,@env0
+	.word @env2,@env0,@env0
+	.byte $00
+	.byte $30 ;instrument $03
+	.word @env2,@env0,@env0
+	.byte $00
+	.byte $30 ;instrument $0e
+	.word @env1,@env3,@env4
+	.byte $00
+	.byte $30 ;instrument $22
+	.word @env1,@env3,@env4
+	.byte $00
+	.byte $30 ;instrument $30
+	.word @env1,@env3,@env4
 	.byte $00
 
 @samples:
 @env0:
 	.byte $c0,$00,$00
 @env1:
-	.byte $c6,$c7,$c8,$c9,$c9,$c7,$c6,$c5,$c5,$c4,$c3,$c3,$00,$0b
+	.byte $c8,$cb,$ce,$cf,$02,$ce,$cb,$c9,$ca,$c9,$c8,$00,$0a
+@env2:
+	.byte $cf,$00,$00
+@env3:
+	.byte $bc,$c5,$c2,$c4,$bb,$c5,$bc,$00,$06
+@env4:
+	.byte $d9,$fe,$ff,$04,$ff,$00,$04
 
 
 ; MainMenu
@@ -102,9 +123,9 @@ blockDude_music_data:
 @song0ch2:
 @song0ch2loop:
 @ref24:
-	.byte $80,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c
-	.byte $00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c
-	.byte $00
+	.byte $86,$1c,$8c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00
+	.byte $1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00
+	.byte $1c,$00
 @ref25:
 	.byte $1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00
 	.byte $1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00
@@ -115,7 +136,7 @@ blockDude_music_data:
 	.byte $21,$00,$21,$00,$21,$00,$21,$00,$21,$00,$21,$00,$21,$00,$21,$00
 	.byte $21,$00,$21,$00,$21,$00,$21,$00,$21,$00,$21,$00,$21,$00,$21,$00
 	.byte $ff,$20
-	.word @ref25
+	.word @ref24
 	.byte $ff,$20
 	.word @ref25
 	.byte $ff,$20
@@ -123,7 +144,7 @@ blockDude_music_data:
 	.byte $ff,$20
 	.word @ref27
 	.byte $ff,$20
-	.word @ref25
+	.word @ref24
 	.byte $ff,$20
 	.word @ref25
 	.byte $ff,$20
@@ -137,31 +158,32 @@ blockDude_music_data:
 @song0ch3:
 @song0ch3loop:
 @ref36:
-	.byte $82,$10,$82,$00,$83,$0d,$00,$10,$00,$83,$10,$00,$0d,$00,$83,$10
-	.byte $00,$83,$0d,$00,$10,$00,$83,$10,$00,$0d,$00,$83
+	.byte $84,$10,$8a,$00,$83,$0d,$88,$00,$10,$84,$00,$83,$10,$00,$0d,$00
+	.byte $83,$10,$00,$83,$0d,$00,$10,$00,$83,$10,$00,$0d,$00,$83
 @ref37:
+	.byte $10,$00,$83,$0d,$00,$10,$88,$00,$83,$10,$00,$0d,$00,$83,$10,$00
+	.byte $83,$0d,$00,$10,$00,$83,$10,$00,$0d,$00,$83
+@ref38:
 	.byte $10,$00,$83,$0d,$00,$10,$00,$83,$10,$00,$0d,$00,$83,$10,$00,$83
 	.byte $0d,$00,$10,$00,$83,$10,$00,$0d,$00,$83
 	.byte $ff,$1a
-	.word @ref37
+	.word @ref38
+	.byte $ff,$1a
+	.word @ref36
 	.byte $ff,$1a
 	.word @ref37
 	.byte $ff,$1a
-	.word @ref37
+	.word @ref38
+	.byte $ff,$1a
+	.word @ref38
+	.byte $ff,$1a
+	.word @ref36
 	.byte $ff,$1a
 	.word @ref37
 	.byte $ff,$1a
-	.word @ref37
+	.word @ref38
 	.byte $ff,$1a
-	.word @ref37
-	.byte $ff,$1a
-	.word @ref37
-	.byte $ff,$1a
-	.word @ref37
-	.byte $ff,$1a
-	.word @ref37
-	.byte $ff,$1a
-	.word @ref37
+	.word @ref38
 	.byte $fd
 	.word @song0ch3loop
 
@@ -222,7 +244,7 @@ blockDude_music_data:
 ; PreLevel
 @song1ch2:
 @ref64:
-	.byte $80,$2c,$95,$2a,$85,$2c,$85,$2d,$85,$2f,$9f,$00
+	.byte $86,$2c,$95,$2a,$85,$2c,$85,$2d,$85,$2f,$9f,$00
 @song1ch2loop:
 @ref65:
 	.byte $81
@@ -299,17 +321,19 @@ blockDude_music_data:
 @song2ch2:
 @song2ch2loop:
 @ref86:
-	.byte $80,$28,$00,$28,$00,$83,$2c,$91
+	.byte $86,$28,$00,$28,$00,$83,$2c,$91
 @ref87:
-	.byte $25,$00,$87,$25,$00,$8f
-@ref88:
-	.byte $28,$00,$28,$00,$83,$2c,$91
+	.byte $25,$80,$00,$87,$25,$00,$8f
+	.byte $ff,$07
+	.word @ref86
 	.byte $ff,$06
 	.word @ref87
 @ref90:
-	.byte $2a,$00,$2a,$00,$2a,$00,$2a,$00,$2a,$00,$2a,$00,$2c,$00,$2c,$00
+	.byte $86,$2a,$00,$2a,$00,$2a,$00,$2a,$00,$2a,$00,$2a,$00,$2c,$00,$2c
+	.byte $00
 @ref91:
-	.byte $2d,$00,$2d,$00,$2d,$00,$2d,$00,$2d,$00,$2d,$00,$2d,$00,$2d,$00
+	.byte $2d,$00,$2d,$80,$00,$2d,$00,$2d,$00,$2d,$00,$2d,$00,$2d,$00,$2d
+	.byte $00
 	.byte $ff,$10
 	.word @ref90
 @ref93:
@@ -321,21 +345,21 @@ blockDude_music_data:
 @song2ch3:
 @song2ch3loop:
 @ref94:
-	.byte $80,$10,$00,$83,$0d,$00,$10,$00,$83,$10,$00,$0d,$00,$83
+	.byte $84,$10,$00,$83,$0d,$00,$10,$00,$83,$10,$00,$0d,$00,$83
 	.byte $ff,$0d
-	.word @ref94
+	.word @ref38
 	.byte $ff,$0d
-	.word @ref37
+	.word @ref38
 	.byte $ff,$0d
-	.word @ref37
+	.word @ref38
 	.byte $ff,$0d
-	.word @ref37
+	.word @ref38
 	.byte $ff,$0d
-	.word @ref37
+	.word @ref38
 	.byte $ff,$0d
-	.word @ref37
+	.word @ref38
 	.byte $ff,$0d
-	.word @ref37
+	.word @ref38
 	.byte $fd
 	.word @song2ch3loop
 
