@@ -26,12 +26,6 @@ blockDude_music_data:
 	.byte $30 ;instrument $03
 	.word @env2,@env0,@env0
 	.byte $00
-	.byte $30 ;instrument $0e
-	.word @env1,@env3,@env4
-	.byte $00
-	.byte $30 ;instrument $22
-	.word @env1,@env3,@env4
-	.byte $00
 	.byte $30 ;instrument $30
 	.word @env1,@env3,@env4
 	.byte $00
@@ -123,7 +117,7 @@ blockDude_music_data:
 @song0ch2:
 @song0ch2loop:
 @ref24:
-	.byte $86,$1c,$8c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00
+	.byte $86,$1c,$88,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00
 	.byte $1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00
 	.byte $1c,$00
 @ref25:
@@ -158,32 +152,31 @@ blockDude_music_data:
 @song0ch3:
 @song0ch3loop:
 @ref36:
-	.byte $84,$10,$8a,$00,$83,$0d,$88,$00,$10,$84,$00,$83,$10,$00,$0d,$00
-	.byte $83,$10,$00,$83,$0d,$00,$10,$00,$83,$10,$00,$0d,$00,$83
-@ref37:
-	.byte $10,$00,$83,$0d,$00,$10,$88,$00,$83,$10,$00,$0d,$00,$83,$10,$00
+	.byte $84,$10,$00,$83,$0d,$00,$10,$00,$83,$10,$00,$0d,$00,$83,$10,$00
 	.byte $83,$0d,$00,$10,$00,$83,$10,$00,$0d,$00,$83
-@ref38:
+@ref37:
 	.byte $10,$00,$83,$0d,$00,$10,$00,$83,$10,$00,$0d,$00,$83,$10,$00,$83
 	.byte $0d,$00,$10,$00,$83,$10,$00,$0d,$00,$83
 	.byte $ff,$1a
-	.word @ref38
-	.byte $ff,$1a
-	.word @ref36
+	.word @ref37
 	.byte $ff,$1a
 	.word @ref37
 	.byte $ff,$1a
-	.word @ref38
-	.byte $ff,$1a
-	.word @ref38
-	.byte $ff,$1a
-	.word @ref36
+	.word @ref37
 	.byte $ff,$1a
 	.word @ref37
 	.byte $ff,$1a
-	.word @ref38
+	.word @ref37
 	.byte $ff,$1a
-	.word @ref38
+	.word @ref37
+	.byte $ff,$1a
+	.word @ref37
+	.byte $ff,$1a
+	.word @ref37
+	.byte $ff,$1a
+	.word @ref37
+	.byte $ff,$1a
+	.word @ref37
 	.byte $fd
 	.word @song0ch3loop
 
@@ -344,22 +337,22 @@ blockDude_music_data:
 ; Level
 @song2ch3:
 @song2ch3loop:
-@ref94:
-	.byte $84,$10,$00,$83,$0d,$00,$10,$00,$83,$10,$00,$0d,$00,$83
 	.byte $ff,$0d
-	.word @ref38
+	.word @ref36
 	.byte $ff,$0d
-	.word @ref38
+	.word @ref37
 	.byte $ff,$0d
-	.word @ref38
+	.word @ref37
 	.byte $ff,$0d
-	.word @ref38
+	.word @ref37
 	.byte $ff,$0d
-	.word @ref38
+	.word @ref37
 	.byte $ff,$0d
-	.word @ref38
+	.word @ref37
 	.byte $ff,$0d
-	.word @ref38
+	.word @ref37
+	.byte $ff,$0d
+	.word @ref37
 	.byte $fd
 	.word @song2ch3loop
 
