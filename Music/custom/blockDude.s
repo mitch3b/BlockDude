@@ -26,21 +26,14 @@ blockDude_music_data:
 	.byte $30 ;instrument $03
 	.word @env2,@env0,@env0
 	.byte $00
-	.byte $30 ;instrument $30
-	.word @env1,@env3,@env4
-	.byte $00
 
 @samples:
 @env0:
 	.byte $c0,$00,$00
 @env1:
-	.byte $c8,$cb,$ce,$cf,$02,$ce,$cb,$c9,$ca,$c9,$c8,$00,$0a
+	.byte $c5,$c7,$c8,$c9,$c9,$c8,$c7,$c6,$c6,$c5,$c4,$c3,$00,$0b
 @env2:
-	.byte $cf,$00,$00
-@env3:
-	.byte $bc,$c5,$c2,$c4,$bb,$c5,$bc,$00,$06
-@env4:
-	.byte $d9,$fe,$ff,$04,$ff,$00,$04
+	.byte $c8,$00,$00
 
 
 ; MainMenu
@@ -117,9 +110,9 @@ blockDude_music_data:
 @song0ch2:
 @song0ch2loop:
 @ref24:
-	.byte $86,$1c,$88,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00
-	.byte $1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00
-	.byte $1c,$00
+	.byte $86,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c
+	.byte $00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c
+	.byte $00
 @ref25:
 	.byte $1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00
 	.byte $1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00,$1c,$00
@@ -130,7 +123,7 @@ blockDude_music_data:
 	.byte $21,$00,$21,$00,$21,$00,$21,$00,$21,$00,$21,$00,$21,$00,$21,$00
 	.byte $21,$00,$21,$00,$21,$00,$21,$00,$21,$00,$21,$00,$21,$00,$21,$00
 	.byte $ff,$20
-	.word @ref24
+	.word @ref25
 	.byte $ff,$20
 	.word @ref25
 	.byte $ff,$20
@@ -138,7 +131,7 @@ blockDude_music_data:
 	.byte $ff,$20
 	.word @ref27
 	.byte $ff,$20
-	.word @ref24
+	.word @ref25
 	.byte $ff,$20
 	.word @ref25
 	.byte $ff,$20
@@ -316,17 +309,15 @@ blockDude_music_data:
 @ref86:
 	.byte $86,$28,$00,$28,$00,$83,$2c,$91
 @ref87:
-	.byte $25,$80,$00,$87,$25,$00,$8f
-	.byte $ff,$07
-	.word @ref86
+	.byte $25,$00,$87,$25,$00,$8f
+@ref88:
+	.byte $28,$00,$28,$00,$83,$2c,$91
 	.byte $ff,$06
 	.word @ref87
 @ref90:
-	.byte $86,$2a,$00,$2a,$00,$2a,$00,$2a,$00,$2a,$00,$2a,$00,$2c,$00,$2c
-	.byte $00
+	.byte $2a,$00,$2a,$00,$2a,$00,$2a,$00,$2a,$00,$2a,$00,$2c,$00,$2c,$00
 @ref91:
-	.byte $2d,$00,$2d,$80,$00,$2d,$00,$2d,$00,$2d,$00,$2d,$00,$2d,$00,$2d
-	.byte $00
+	.byte $2d,$00,$2d,$00,$2d,$00,$2d,$00,$2d,$00,$2d,$00,$2d,$00,$2d,$00
 	.byte $ff,$10
 	.word @ref90
 @ref93:

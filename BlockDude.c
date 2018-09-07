@@ -872,6 +872,7 @@ void move_logic (void) {
 							remove_from_background(blocks_X[index5], blocks_Y[index5]);
 							holdingBlock = index5;
 							isHoldingBlock = 1;
+							Play_Fx(0);
 							break;
 						}
 					}
@@ -901,6 +902,7 @@ void move_logic (void) {
 				SPRITES[4] = 0xf8;
 				SPRITES[7] = 0;
 				isHoldingBlock = 0;
+				Play_Fx(1);
 			}
 		}
 	}

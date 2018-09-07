@@ -227,6 +227,7 @@ void init_level(void);
 void Reset_Music(void);
 void __fastcall__ Play_Music(unsigned char song);
 void Music_Update(void);
+void __fastcall__ Play_Fx(unsigned char song);
 void __fastcall__ memcpy (void* dest, const void* src, int count);
 void Wait_Vblank(void);
 void __fastcall__ UnRLE(const unsigned char *data);

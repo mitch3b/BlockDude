@@ -4,25 +4,11 @@
 	.export __STARTUP__:absolute=1, _hide_sprites
 	.importzp _NMI_flag, _Frame_Count
 	.importzp _Horiz_scroll, _Nametable, _Erase_X, _Erase_Y, _Block_X, _Block_Y
-	;.importzp _Reset_Music, _Play_Music, _Music_Update
-
 
 ; Linker generated symbols
 	.import __STACK_START__, __STACK_SIZE__
     .include "zeropage.inc"
 	.import initlib, copydata
-
-;FT_BASE_ADR		=$0700	;page in RAM, should be $xx00
-
-;.define FT_THREAD       1	;undefine if you call sound effects in the same thread as sound update
-;.define FT_PAL_SUPPORT	1   ;undefine to exclude PAL support
-;.define FT_NTSC_SUPPORT	1   ;undefine to exclude NTSC support
-
-;FT_DPCM_OFF				= $c000		;$c000..$ffc0, 64-byte steps
-;FT_SFX_STREAMS			= 1			;number of sound effects played at once, 1..4
-
-;.define FT_DPCM_ENABLE  0			;undefine to exclude all DMC code
-;.define FT_SFX_ENABLE   0			;undefine to exclude all sound effects code
 
 .segment "ZEROPAGE"
 
@@ -84,9 +70,18 @@ MusicInit:			;turns music channels off
 	sta $4015
 
 	lda #<(__STACK_START__+__STACK_SIZE__)
-    sta	sp
-    lda	#>(__STACK_START__+__STACK_SIZE__)
-    sta	sp+1            ; Set the c stack pointer
+  sta	sp
+  lda	#>(__STACK_START__+__STACK_SIZE__)
+  sta	sp+1            ; Set the c stack pointer
+
+	lda #1
+	sta NTSC_MODE
+
+
+	;init sfx
+	ldx #<sounds			;set sound effects data location
+	ldy #>sounds
+	jsr FamiToneSfxInit
 
 	jsr	copydata
 	jsr	initlib
@@ -185,7 +180,7 @@ music_data:
 	.include "Music/custom/blockDude.s"
 
 sounds_data:
-
+	.include "Music/custom/soundFx.s"
 ;none yet
 
 .segment "VECTORS"
