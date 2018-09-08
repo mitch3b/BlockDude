@@ -68,6 +68,8 @@ unsigned char Erase_Y;
 unsigned char Block_X;
 unsigned char Block_Y;
 
+unsigned char song;	//which song
+
 #pragma bss-name(push, "OAM")
 unsigned char SPRITES[256]; //64 sprites * 4 bytes
 // OAM equals ram addresses 200-2ff
@@ -222,6 +224,10 @@ void hide_sprites(void);
 
 void init_level(void);
 
+void Reset_Music(void);
+void __fastcall__ Play_Music(unsigned char song);
+void Music_Update(void);
+void __fastcall__ Play_Fx(unsigned char song);
 void __fastcall__ memcpy (void* dest, const void* src, int count);
 void Wait_Vblank(void);
 void __fastcall__ UnRLE(const unsigned char *data);

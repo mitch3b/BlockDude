@@ -5,17 +5,16 @@
 	.importzp _NMI_flag, _Frame_Count
 	.importzp _Horiz_scroll, _Nametable, _Erase_X, _Erase_Y, _Block_X, _Block_Y
 
-
 ; Linker generated symbols
 	.import __STACK_START__, __STACK_SIZE__
     .include "zeropage.inc"
 	.import initlib, copydata
 
-
-
 .segment "ZEROPAGE"
 
-
+NTSC_MODE: 			.res 1
+;FT_TEMP: 			.res 3
+TEMP: 				.res 11
 
 
 .segment "HEADER"
@@ -71,9 +70,18 @@ MusicInit:			;turns music channels off
 	sta $4015
 
 	lda #<(__STACK_START__+__STACK_SIZE__)
-    sta	sp
-    lda	#>(__STACK_START__+__STACK_SIZE__)
-    sta	sp+1            ; Set the c stack pointer
+  sta	sp
+  lda	#>(__STACK_START__+__STACK_SIZE__)
+  sta	sp+1            ; Set the c stack pointer
+
+	lda #1
+	sta NTSC_MODE
+
+
+	;init sfx
+	ldx #<sounds			;set sound effects data location
+	ldy #>sounds
+	jsr FamiToneSfxInit
 
 	jsr	copydata
 	jsr	initlib
@@ -166,7 +174,13 @@ irq:
     rti
 
 .segment "RODATA"
+	.include "Music/famitone4.s"
 
+music_data:
+	.include "Music/blockDude.s"
+
+sounds_data:
+	.include "Music/soundFx.s"
 ;none yet
 
 .segment "VECTORS"

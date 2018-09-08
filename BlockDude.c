@@ -6,9 +6,14 @@ void main (void) {
 	               //7 in restart animation, 8 load password screen, 9 password screen, 10 load help screen, 11 - help screen
 								 //12 - game over screen, 13 - stuck in game over
 	currentLevel = 1;
+	song = 0;
 
 	Load_Palette();
 	Reset_Scroll();
+
+	Reset_Music(); // note, this is famitone init, and I added the music data address. see famitone2.s
+	Play_Music(song); // song = 0
+
 	Wait_Vblank();
 	All_On(); // turn on screen
 	while (1){ // infinite loop
@@ -67,6 +72,10 @@ void main (void) {
 		else if (gameState == 5) { //Load level
 			All_Off();
 
+			Reset_Music();
+			song = 2;
+			Play_Music(song);
+
 			gameState = 6; //By default go to in level state
 
 			switch(currentLevel) {
@@ -119,6 +128,10 @@ void main (void) {
 			hide_sprites();
 			All_Off();
 
+			Reset_Music();
+			song = 1;
+			Play_Music(song);
+
 			init_prelevel_menu();
 
 			Wait_Vblank();
@@ -144,6 +157,8 @@ void main (void) {
 			menu_move_logic();
 			highlight_menu_option();
 		}
+
+		Music_Update();
 		//TODO remove ... just for debugging
 		//draw_location();
 
@@ -799,6 +814,7 @@ void move_logic (void) {
 		//Reset on select
 		velocityY = 10;
 		gameState = 7;
+		Play_Fx(2);
 	}
 
 	if(isButtonPressed(UP)) {
@@ -857,6 +873,7 @@ void move_logic (void) {
 							remove_from_background(blocks_X[index5], blocks_Y[index5]);
 							holdingBlock = index5;
 							isHoldingBlock = 1;
+							Play_Fx(0);
 							break;
 						}
 					}
@@ -886,6 +903,7 @@ void move_logic (void) {
 				SPRITES[4] = 0xf8;
 				SPRITES[7] = 0;
 				isHoldingBlock = 0;
+				Play_Fx(1);
 			}
 		}
 	}

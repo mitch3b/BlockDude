@@ -6,5 +6,8 @@
 !asm4c.s
 !reset.s
 !release/*.nes
+!Music/famitone4.s
+!Music/BlockDude.s
+!Music/SoundFx.s
 # Other
 .DS_Store
