@@ -10,3 +10,6 @@ All info about different versions, known bugs, etc.
   Fixed some sprites slightly visibile in the top left
   Fixed Game Complete screen which had an extra random 'B' on it
 
+0.04:
+  Sending out for beta to consider this as 1.0. 
+  Has music and sound fx
