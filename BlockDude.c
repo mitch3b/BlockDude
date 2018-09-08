@@ -814,6 +814,7 @@ void move_logic (void) {
 		//Reset on select
 		velocityY = 10;
 		gameState = 7;
+		Play_Fx(2);
 	}
 
 	if(isButtonPressed(UP)) {
