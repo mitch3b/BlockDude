@@ -177,10 +177,10 @@ irq:
 	.include "Music/famitone4.s"
 
 music_data:
-	.include "Music/custom/blockDude.s"
+	.include "Music/blockDude.s"
 
 sounds_data:
-	.include "Music/custom/soundFx.s"
+	.include "Music/soundFx.s"
 ;none yet
 
 .segment "VECTORS"
