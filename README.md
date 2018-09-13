@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a port of the TI-83 (and other calcs) game Block Dude. The original was created by Brandon Sterner and can be foun [here](https://education.ti.com/af/software/details/en/6AD0564FC779423E90F3BE776F72B5FD/83puzzlepack). There are also great emulators if you don't have the calculator yourself. OR if you have a way to play NES roms, you can play this port :)
+This is a port of the TI-83 (and other calcs) puzzle game Block Dude. In the game, you control Block Dude, whose powers are to pick up and put down one block at a time. He can also climb one block at a time! Using the blocks, you make your way to the door which brings you to the next level. The original was created by Brandon Sterner and can be found [here](https://education.ti.com/af/software/details/en/6AD0564FC779423E90F3BE776F72B5FD/83puzzlepack). There are also great emulators if you don't have the calculator yourself. OR if you have a way to play NES roms, you can play this port :)
 
 ## Why
 
