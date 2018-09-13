@@ -71,7 +71,7 @@ void main (void) {
 			All_Off();
 
 			Reset_Music();
-			song = 2;
+			song = (currentLevel == 12) ? 0 : 2;
 			Play_Music(song);
 
 			gameState = 6; //By default go to in level state
