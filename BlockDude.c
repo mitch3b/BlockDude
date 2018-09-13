@@ -25,19 +25,17 @@ void main (void) {
 		if(gameState == 14) {
 			//Do nothing, game over screen or game complete screen is up.
 		}
-		else if(gameState == 13) {
-			//Do nothing, game over screen or game complete screen is up.
-		}
 		else if(gameState == 12) {
 			All_Off();
 
-			init_game_over_screen();
+			init_exit_screen();
 
 			Wait_Vblank();
 			All_On();
 			Reset_Scroll();
 		}
 		else if(gameState == 11) {
+			//used for the exit screen too
 			help_screen_logic();
 		}
 		else if(gameState == 10) {
@@ -160,7 +158,6 @@ void main (void) {
 
 		Music_Update();
 		//TODO remove ... just for debugging
-		//draw_location();
 
 		NMI_flag = 0;
 	}
@@ -220,7 +217,6 @@ void init_test_level(void) {
 	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
 	PPU_ADDRESS = 0x00;
 	UnRLE(TestLevel);	// uncompresses our data
-
 
 	for(index = 0 ; index < sizeof(collisionBinTestLevel) ; index++) {
 		collisionBin[index] = collisionBinTestLevel[index];
@@ -329,13 +325,13 @@ void init_prelevel_menu(void) {
 	}
 }
 
-void init_game_over_screen(void) {
-		PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
-		PPU_ADDRESS = 0x00;
-		UnRLE(GameOverScreen);	// uncompresses our data
+void init_exit_screen(void) {
+	PPU_ADDRESS = 0x20; // address of nametable #0 = 0x2000
+	PPU_ADDRESS = 0x00;
+	UnRLE(ExitScreen);	// uncompresses our data
 
-		hide_sprites();
-		gameState = 13;
+	hide_sprites();
+	gameState = 11;
 }
 
 void init_help_screen(void) {
@@ -986,44 +982,4 @@ void check_endlevel(void) {
 			gameState = 5;
 		}
 	}
-}
-
-//For debugging
-void draw_location(void) {
-	//sprites 228-243
-	//Get index into collisionBin
-	index = numFramesInMovement;
-
-	//Find the bit for that collisionBin Index
-	index4 = buttonBeingHeld;
-	//x 100's
-	SPRITES[228] = 0x10;
-	SPRITES[229] = 0x30 + ((index / 100) % 10);
-	SPRITES[230] = 0;
-	SPRITES[231] = 0x10;
-	//x 10's
-	SPRITES[244] = 0x10;
-	SPRITES[245] = 0x30 + ((index / 10) % 10);
-	SPRITES[246] = 0;
-	SPRITES[247] = 0x18;
-	//x 1's
-	SPRITES[248] = 0x10;
-	SPRITES[249] = 0x30 + (index % 10);
-	SPRITES[250] = 0;
-	SPRITES[251] = 0x20;
-	//y 100's
-	SPRITES[232] = 0x10;
-	SPRITES[233] = 0x30 + ((index4 / 100) % 10);
-	SPRITES[234] = 0;
-	SPRITES[235] = 0x30;
-	//x 10's
-	SPRITES[236] = 0x10;
-	SPRITES[237] = 0x30 + ((index4 / 10) % 10);
-	SPRITES[238] = 0;
-	SPRITES[239] = 0x38;
-	//x 1's
-	SPRITES[240] = 0x10;
-	SPRITES[241] = 0x30 + (index4 % 10);
-	SPRITES[242] = 0;
-	SPRITES[243] = 0x40;
 }

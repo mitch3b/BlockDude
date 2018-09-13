@@ -74,12 +74,11 @@ unsigned char song;	//which song
 unsigned char SPRITES[256]; //64 sprites * 4 bytes
 // OAM equals ram addresses 200-2ff
 
-
 #include "BG/TitleScreen.h"
 #include "BG/MenuScreen.h"
 #include "BG/HelpScreen.h"
 #include "BG/PasswordScreen.h"
-#include "BG/GameOverScreen.h"
+#include "BG/ExitScreen.h"
 #include "BG/GameCompleteScreen.h"
 #include "BG/LevelMenu.h"
 #include "BG/Level1.h"
@@ -190,7 +189,7 @@ void Load_Palette(void);
 void init_title_menu(void);
 void highlight_menu_option(void);
 void init_help_screen(void);
-void init_game_over_screen(void);
+void init_exit_screen(void);
 void help_screen_logic(void);
 void init_password_screen(void);
 void enter_password_logic(void);
@@ -213,7 +212,6 @@ void testForStart(void);
 void move_logic (void);
 void update_sprites (void);
 void check_endlevel(void);
-void draw_location(void);
 void getCollisionIndices(int x, int y);
 void add_to_collision_map(int x, int y);
 void remove_from_background(int x, int y);

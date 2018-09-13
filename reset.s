@@ -7,6 +7,7 @@
 
 ; Linker generated symbols
 	.import __STACK_START__, __STACK_SIZE__
+	.import NES_PRG_BANKS, NES_CHR_BANKS
     .include "zeropage.inc"
 	.import initlib, copydata
 
@@ -20,8 +21,8 @@ TEMP: 				.res 11
 .segment "HEADER"
 
     .byte $4e,$45,$53,$1a
-	.byte 01
-	.byte 01
+	.byte 01 ;<NES_PRG_BANKS
+	.byte 01 ;<NES_CHR_BANKS
 	.byte 01 ;vertical mirroring = horizontal scrolling
 	.byte 00
 	.res 8,0
