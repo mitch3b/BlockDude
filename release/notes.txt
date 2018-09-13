@@ -13,3 +13,9 @@ All info about different versions, known bugs, etc.
 0.04:
   Sending out for beta to consider this as 1.0. 
   Has music and sound fx
+
+1.00:
+  Added thank yous and updated the exit screen. 
+  Known bugs:
+    Input happens before first collision so on spawning you can make it into a block next to you which will spit you out the bottom which wraps you to the top. Doesn't help in any level and kind of fun so leaving it in
+    In two consecutive cases, left the game in menu running on everdrive and after ~10 minutes it froze up. Tried in emulator for 45 minutes, also tried on everdrive in a level for 45 minutes with no recreation. Then tried on everdrive in menu for 15 minutes and didn't happen. Link_7777 also tried 45 minutes in powerpak and didn't see it. Currently calling this an everdrive issue, but worth keeping an eye out
