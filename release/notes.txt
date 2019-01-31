@@ -19,3 +19,8 @@ All info about different versions, known bugs, etc.
   Known bugs:
     Input happens before first collision so on spawning you can make it into a block next to you which will spit you out the bottom which wraps you to the top. Doesn't help in any level and kind of fun so leaving it in
     In two consecutive cases, left the game in menu running on everdrive and after ~10 minutes it froze up. Tried in emulator for 45 minutes, also tried on everdrive in a level for 45 minutes with no recreation. Then tried on everdrive in menu for 15 minutes and didn't happen. Link_7777 also tried 45 minutes in powerpak and didn't see it. Currently calling this an everdrive issue, but worth keeping an eye out
+
+1.01:
+  Updated to comply with NesDev competition, which fixed a bug anyway of writeing to PPU when really shouldnt
+  Fixed 1 frame issue where sprites from previous screen would flash (think screen burn in effect)
+
