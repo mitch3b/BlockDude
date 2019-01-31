@@ -68,6 +68,8 @@ void main (void) {
 			check_endlevel();
 		}
 		else if (gameState == 5) { //Load level
+			hide_sprites();
+			Wait_Vblank();
 			All_Off();
 
 			Reset_Music();
@@ -124,6 +126,7 @@ void main (void) {
 		}
 		else if (gameState == 3) { //Pre level menu
 			hide_sprites();
+			Wait_Vblank();
 			All_Off();
 
 			Reset_Music();
