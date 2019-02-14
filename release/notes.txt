@@ -23,4 +23,6 @@ All info about different versions, known bugs, etc.
 1.01:
   Updated to comply with NesDev competition, which fixed a bug anyway of writeing to PPU when really shouldnt
   Fixed 1 frame issue where sprites from previous screen would flash (think screen burn in effect)
+1.02:
+  CHR had some leftover Mario 1 data. While it was’t actually part of the game, I had started with it from a tutorial I had used and never cleaned it out.
 
